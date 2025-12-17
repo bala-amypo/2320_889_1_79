@@ -5,4 +5,6 @@ public interface NewfileService{
     NewFileEntity getidval(Long id);
     List<NewFileEntity> getall();
     NewFileEntity update(Long id,NewFileEntity newfile);
+    void delete(Long id);
+    
 }
