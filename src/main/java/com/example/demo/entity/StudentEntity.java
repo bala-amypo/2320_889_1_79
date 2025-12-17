@@ -4,8 +4,12 @@ import java.time.LocalDate;
 
 public class Studententity {
     @Id
-    @GeneratedValue(strategy)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @GeneratedValue(strategy = GenerationType.Auto)
     private String name;
+    @column(name=unique)
+    private String email;
     private int id;
     private LocalDate date;
     private float cgpa;
