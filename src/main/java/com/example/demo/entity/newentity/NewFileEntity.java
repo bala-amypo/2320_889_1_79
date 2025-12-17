@@ -15,10 +15,18 @@ public class NewFileEntity{
     @Email(message = "Invalid format") String email)
     {
           this.name = name;
-        this.id = id;
-        this.email = email;
+          this.id = id;
+          this.email = email;
     }
-   
+   public NewFileEntity(){
+
+   }
+   public Long getId(){
+    return id;
+   }
+   public void setId(Long id){
+    this.id=id;
+   }
     public String getName() {
         return name;
     }
