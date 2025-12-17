@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import java.time.LocalDate;
 
 public class Studententity {
+    @Id
+    @GeneratedValue(strategy)
     private String name;
     private int id;
     private LocalDate date;
