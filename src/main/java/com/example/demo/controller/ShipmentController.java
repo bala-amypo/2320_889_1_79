@@ -4,25 +4,30 @@ import com.example.demo.entity.Shipment;
 import com.example.demo.service.ShipmentService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/shipments")
+@RequestMapping("/shipments")
 public class ShipmentController {
 
     private final ShipmentService shipmentService;
 
-    // Constructor Injection ONLY
     public ShipmentController(ShipmentService shipmentService) {
         this.shipmentService = shipmentService;
     }
 
-    @PostMapping("/vehicle/{vehicleId}")
-    public Shipment createShipment(@PathVariable Long vehicleId,
-                                   @RequestBody Shipment shipment) {
-        return shipmentService.createShipment(vehicleId, shipment);
+    @PostMapping("/add")
+    public Shipment addShipment(@RequestBody Shipment shipment) {
+        return shipmentService.addShipment(shipment);
+    }
+
+    @GetMapping("/all")
+    public List<Shipment> getAllShipments() {
+        return shipmentService.getAllShipments();
     }
 
     @GetMapping("/{id}")
-    public Shipment getShipment(@PathVariable Long id) {
-        return shipmentService.getShipment(id);
+    public Shipment getShipmentById(@PathVariable Long id) {
+        return shipmentService.findById(id);
     }
 }

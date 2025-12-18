@@ -1,12 +1,34 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.Vehicle;
+import com.example.demo.entity.Shipment;
+import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.service.ShipmentService;
 import org.springframework.stereotype.Service;
 
-@Service
-public class ShipmentServiceImpl {
+import java.util.List;
 
-    public boolean canShip(double shipmentWeight, Vehicle vehicle) {
-        return shipmentWeight <= vehicle.getCapacityKg();
+@Service
+public class ShipmentServiceImpl implements ShipmentService {
+
+    private final ShipmentRepository shipmentRepository;
+
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository) {
+        this.shipmentRepository = shipmentRepository;
+    }
+
+    @Override
+    public Shipment addShipment(Shipment shipment) {
+        return shipmentRepository.save(shipment);
+    }
+
+    @Override
+    public List<Shipment> getAllShipments() {
+        return shipmentRepository.findAll();
+    }
+
+    @Override
+    public Shipment findById(Long shipmentId) {
+        return shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
     }
 }
