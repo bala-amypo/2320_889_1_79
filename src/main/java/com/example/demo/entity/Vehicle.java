@@ -13,7 +13,6 @@ public class Vehicle {
     private String model;
     private String number;
 
-    // ✅ REQUIRED FIELD
     private double capacityKg;
 
     @ManyToOne
@@ -30,7 +29,6 @@ public class Vehicle {
         this.user = user;
     }
 
-    // getters & setters
     public Long getId() {
         return id;
     }
@@ -55,7 +53,6 @@ public class Vehicle {
         this.number = number;
     }
 
-    // ✅ THIS FIXES THE ERROR
     public double getCapacityKg() {
         return capacityKg;
     }
