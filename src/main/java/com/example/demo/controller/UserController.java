@@ -1,16 +1,9 @@
-package com.example.demo.controller;
-
-import com.example.demo.entity.User;
-import com.example.demo.service.UserService;
-import org.springframework.web.bind.annotation.*;
-
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
 
-    // Constructor Injection ONLY
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -18,10 +11,5 @@ public class UserController {
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         return userService.register(user);
-    }
-
-    @GetMapping("/email/{email}")
-    public User getByEmail(@PathVariable String email) {
-        return userService.findByEmail(email);
     }
 }
