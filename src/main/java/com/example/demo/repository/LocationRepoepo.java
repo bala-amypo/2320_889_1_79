@@ -6,3 +6,4 @@ import com.example.demo.entity.Location;
 public interface LocationRepoepo
         extends JpaRepository<Location, Long> {
 }
+
