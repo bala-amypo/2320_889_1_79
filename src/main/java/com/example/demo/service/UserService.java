@@ -6,5 +6,5 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    User register(User user);   // ✅ add this
+    User register(User user);
 }

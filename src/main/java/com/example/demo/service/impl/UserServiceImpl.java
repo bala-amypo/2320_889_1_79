@@ -16,13 +16,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return null; // will use repository later
+        return null;
     }
 
     @Override
     public User register(User user) {
-        // encode password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return user; // temporary, repository comes later
+        return user;
     }
 }
