@@ -1,26 +1,38 @@
 package com.example.demo.entity;
+
 import jakarta.persistence.*;
 
-public class User{
-    @Id 
+@Entity
+@Table(name = "users")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-    @Column(unique=true)
+
+    @Column(unique = true, nullable = false)
     private String email;
-    private String ADMIN;
-    private String USER;
 
-    public User(Long id, String name, String email, String aDMIN, String uSER) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        ADMIN = aDMIN;
-        USER = uSER;
-    }
+    private String password;
 
+    private String role; // USER / ADMIN
+
+    // No-args constructor
     public User() {
     }
 
+    // All-args constructor
+    public User(Long id, String name, String email, String password, String role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    // Getters & Setters
     public Long getId() {
         return id;
     }
@@ -45,20 +57,19 @@ public class User{
         this.email = email;
     }
 
-    public String getADMIN() {
-        return ADMIN;
+    public String getPassword() {
+        return password;
     }
-
-    public void setADMIN(String aDMIN) {
-        ADMIN = aDMIN;
+ 
+    public void setPassword(String password) {
+        this.password = password;
     }
-
-    public String getUSER() {
-        return USER;
+ 
+    public String getRole() {
+        return role;
     }
-
-    public void setUSER(String uSER) {
-        USER = uSER;
+ 
+    public void setRole(String role) {
+        this.role = role;
     }
 }
-
