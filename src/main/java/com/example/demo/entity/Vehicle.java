@@ -5,7 +5,6 @@ public class Vehicle{
     private Long id;
     @Column(unique=true)
     private String vehicleNumber;
-    @Min(100
     private Double capacityKg;
     private Double fuelEfficiency;
 
