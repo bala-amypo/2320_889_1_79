@@ -1,9 +1,13 @@
 package com.example.demo.entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 public class Vehicle{
     @Id
     private Long id;
-    @Column()
+    @Column(unique=true)
     private String vehicleNumber;
+    @Min(100
+    private Double capacityKg;
+    private Double fuelEfficiency;
+
 
 }
