@@ -7,17 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/vehicles")
+@RequestMapping("/vehicles")
 public class VehicleController {
 
     private final VehicleService vehicleService;
 
-    // Constructor Injection ONLY
     public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
 
-    @PostMapping("/user/{userId}")
+    @PostMapping("/add/{userId}")
     public Vehicle addVehicle(@PathVariable Long userId,
                               @RequestBody Vehicle vehicle) {
         return vehicleService.addVehicle(userId, vehicle);
@@ -28,8 +27,8 @@ public class VehicleController {
         return vehicleService.getVehiclesByUser(userId);
     }
 
-    @GetMapping("/{id}")
-    public Vehicle getVehicle(@PathVariable Long id) {
-        return vehicleService.findById(id);
+    @GetMapping("/{vehicleId}")
+    public Vehicle getVehicleById(@PathVariable Long vehicleId) {
+        return vehicleService.findById(vehicleId);
     }
 }
