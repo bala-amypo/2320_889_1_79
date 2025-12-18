@@ -10,16 +10,6 @@ public class User{
     private String ADMIN;
     private String USER;
 
-    package com.example.demo.entity;
-
-public class User {
-
-    private Long id;
-    private String name;
-    private String email;
-    private String ADMIN;
-    private String USER;
-
     public User(Long id, String name, String email, String aDMIN, String uSER) {
         this.id = id;
         this.name = name;
