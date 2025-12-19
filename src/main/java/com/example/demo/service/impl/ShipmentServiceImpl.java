@@ -1,34 +1,54 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.Shipment;
+import com.example.demo.dto.ShipmentDTO;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.Shipment;
 import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.service.ShipmentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
 
-    private final ShipmentRepository shipmentRepository;
+    private final ShipmentRepository repo;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository) {
-        this.shipmentRepository = shipmentRepository;
+    public ShipmentServiceImpl(ShipmentRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-    public Shipment addShipment(Shipment shipment) {
-        return shipmentRepository.save(shipment);
+    public ShipmentDTO createShipment(ShipmentDTO dto) {
+        Shipment s = new Shipment();
+        s.setWeightKg(dto.getWeightKg());
+        s.setScheduledDate(dto.getScheduledDate());
+
+        Shipment saved = repo.save(s);
+        dto.setId(saved.getId());
+        return dto;
     }
 
     @Override
-    public List<Shipment> getAllShipments() {
-        return shipmentRepository.findAll();
+    public ShipmentDTO getShipmentById(Long id) {
+        Shipment s = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
+        return mapToDTO(s);
     }
 
     @Override
-    public Shipment findById(Long shipmentId) {
-        return shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+    public List<ShipmentDTO> getAllShipments() {
+        return repo.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ShipmentDTO mapToDTO(Shipment s) {
+        ShipmentDTO dto = new ShipmentDTO();
+        dto.setId(s.getId());
+        dto.setWeightKg(s.getWeightKg());
+        dto.setScheduledDate(s.getScheduledDate());
+        return dto;
     }
 }

@@ -1,14 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Vehicle;
-
+import com.example.demo.dto.VehicleDTO;
 import java.util.List;
 
 public interface VehicleService {
-
-    Vehicle addVehicle(Long userId, Vehicle vehicle);
-
-    List<Vehicle> getVehiclesByUser(Long userId);
-
-    Vehicle findById(Long vehicleId);
+    VehicleDTO createVehicle(VehicleDTO dto);
+    VehicleDTO getVehicleById(Long id);
+    List<VehicleDTO> getAllVehicles();
 }

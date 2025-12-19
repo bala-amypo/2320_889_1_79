@@ -1,48 +1,56 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.User;
-import com.example.demo.entity.Vehicle;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.dto.VehicleDTO;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.Vehicle;
 import com.example.demo.repository.VehicleRepository;
 import com.example.demo.service.VehicleService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
 
-    private final VehicleRepository vehicleRepository;
-    private final UserRepository userRepository;
+    private final VehicleRepository repo;
 
-    public VehicleServiceImpl(VehicleRepository vehicleRepository,
-                              UserRepository userRepository) {
-        this.vehicleRepository = vehicleRepository;
-        this.userRepository = userRepository;
+    public VehicleServiceImpl(VehicleRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-    public Vehicle addVehicle(Long userId, Vehicle vehicle) {
+    public VehicleDTO createVehicle(VehicleDTO dto) {
+        Vehicle v = new Vehicle();
+        v.setNumber(dto.getNumber());
+        v.setModel(dto.getModel());
+        v.setCapacityKg(dto.getCapacityKg());
 
-        if (vehicle.getCapacityKg() <= 0) {
-            throw new RuntimeException("Vehicle capacity must be greater than 0");
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        vehicle.setUser(user);
-        return vehicleRepository.save(vehicle);
+        Vehicle saved = repo.save(v);
+        dto.setId(saved.getId());
+        return dto;
     }
 
     @Override
-    public List<Vehicle> getVehiclesByUser(Long userId) {
-        return vehicleRepository.findByUserId(userId);
+    public VehicleDTO getVehicleById(Long id) {
+        Vehicle v = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+        return mapToDTO(v);
     }
 
     @Override
-    public Vehicle findById(Long vehicleId) {
-        return vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+    public List<VehicleDTO> getAllVehicles() {
+        return repo.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private VehicleDTO mapToDTO(Vehicle v) {
+        VehicleDTO dto = new VehicleDTO();
+        dto.setId(v.getId());
+        dto.setNumber(v.getNumber());
+        dto.setModel(v.getModel());
+        dto.setCapacityKg(v.getCapacityKg());
+        return dto;
     }
 }

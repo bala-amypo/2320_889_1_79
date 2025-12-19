@@ -1,8 +1,9 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.RouteOptimizationResult;
-import com.example.demo.entity.Shipment;
+import com.example.demo.dto.RouteOptimizationResultDTO;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.RouteOptimizationResult;
+import com.example.demo.model.Shipment;
 import com.example.demo.repository.RouteOptimizationResultRepository;
 import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.service.RouteOptimizationService;
@@ -13,36 +14,36 @@ import java.time.LocalDateTime;
 @Service
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
-    private final ShipmentRepository shipmentRepository;
-    private final RouteOptimizationResultRepository resultRepository;
+    private final ShipmentRepository shipmentRepo;
+    private final RouteOptimizationResultRepository resultRepo;
 
-    // Constructor Injection ONLY
-    public RouteOptimizationServiceImpl(ShipmentRepository shipmentRepository,
-                                        RouteOptimizationResultRepository resultRepository) {
-        this.shipmentRepository = shipmentRepository;
-        this.resultRepository = resultRepository;
+    public RouteOptimizationServiceImpl(
+            ShipmentRepository shipmentRepo,
+            RouteOptimizationResultRepository resultRepo) {
+        this.shipmentRepo = shipmentRepo;
+        this.resultRepo = resultRepo;
     }
 
     @Override
-    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
+    public RouteOptimizationResultDTO optimizeRoute(Long shipmentId) {
 
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Shipment not found"));
+        Shipment shipment = shipmentRepo.findById(shipmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
 
         RouteOptimizationResult result = new RouteOptimizationResult();
         result.setShipment(shipment);
-        result.setOptimizedDistanceKm(100.0);
-        result.setEstimatedFuelUsageL(10.0);
+        result.setOptimizedDistanceKm(120.5);
+        result.setEstimatedFuelUsageL(18.2);
         result.setGeneratedAt(LocalDateTime.now());
 
-        return resultRepository.save(result);
-    }
+        RouteOptimizationResult saved = resultRepo.save(result);
 
-    @Override
-    public RouteOptimizationResult getResult(Long resultId) {
-        return resultRepository.findById(resultId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Result not found"));
+        RouteOptimizationResultDTO dto = new RouteOptimizationResultDTO();
+        dto.setId(saved.getId());
+        dto.setOptimizedDistanceKm(saved.getOptimizedDistanceKm());
+        dto.setEstimatedFuelUsageL(saved.getEstimatedFuelUsageL());
+        dto.setGeneratedAt(saved.getGeneratedAt());
+
+        return dto;
     }
 }
