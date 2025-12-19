@@ -1,27 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.RouteOptimizationResult;
+import com.example.demo.dto.RouteOptimizationResultDTO;
 import com.example.demo.service.RouteOptimizationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/optimize")
+@RequestMapping("/api/route-optimization")
 public class RouteOptimizationController {
 
     private final RouteOptimizationService routeOptimizationService;
 
-    // Constructor Injection ONLY
     public RouteOptimizationController(RouteOptimizationService routeOptimizationService) {
         this.routeOptimizationService = routeOptimizationService;
     }
 
     @PostMapping("/{shipmentId}")
-    public RouteOptimizationResult optimize(@PathVariable Long shipmentId) {
-        return routeOptimizationService.optimizeRoute(shipmentId);
-    }
-
-    @GetMapping("/result/{resultId}")
-    public RouteOptimizationResult getResult(@PathVariable Long resultId) {
-        return routeOptimizationService.getResult(resultId);
+    public ResponseEntity<RouteOptimizationResultDTO> optimize(@PathVariable Long shipmentId) {
+        return ResponseEntity.ok(routeOptimizationService.optimizeRoute(shipmentId));
     }
 }
