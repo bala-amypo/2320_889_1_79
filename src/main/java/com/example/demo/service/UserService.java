@@ -4,8 +4,7 @@ import com.example.demo.dto.UserDTO;
 import java.util.List;
 
 public interface UserService {
-    UserDTO createUser(UserDTO userDTO);
-    UserDTO getUserById(Long id);
+    UserDTO createUser(UserDTO dto);
     List<UserDTO> getAllUsers();
-    void deleteUser(Long id);
+    UserDTO getUserById(Long id);
 }

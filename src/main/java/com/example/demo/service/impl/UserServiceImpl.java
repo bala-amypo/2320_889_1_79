@@ -1,51 +1,56 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.dto.UserDTO;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repo;
+    private final PasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder) {
+        this.repo = repo;
+        this.encoder = encoder;
     }
 
     @Override
     public UserDTO createUser(UserDTO dto) {
-
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-
-        User saved = userRepository.save(user);
-
-        UserDTO response = new UserDTO();
-        response.setId(saved.getId());
-        response.setName(saved.getName());
-        response.setEmail(saved.getEmail());
-
-        return response;
-    }
-
-    @Override
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
+        user.setPassword(encoder.encode(dto.getPassword()));
+        User saved = repo.save(user);
+        dto.setId(saved.getId());
+        dto.setPassword(null);
         return dto;
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public List<UserDTO> getAllUsers() {
+        return repo.findAll().stream().map(u -> {
+            UserDTO dto = new UserDTO();
+            dto.setId(u.getId());
+            dto.setName(u.getName());
+            dto.setEmail(u.getEmail());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDTO getUserById(Long id) {
+        User u = repo.findById(id).orElseThrow();
+        UserDTO dto = new UserDTO();
+        dto.setId(u.getId());
+        dto.setName(u.getName());
+        dto.setEmail(u.getEmail());
+        return dto;
     }
 }
