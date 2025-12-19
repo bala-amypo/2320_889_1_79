@@ -2,38 +2,61 @@ package com.example.demo.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class VehicleDTO {
 
     private Long id;
 
     @NotBlank(message = "Vehicle number is required")
-    private String vehicleNumber;
+    private String number;
+
+    @NotBlank(message = "Vehicle model is required")
+    private String model;
 
     @NotNull(message = "Capacity is required")
+    @Positive(message = "Capacity must be greater than zero")
     private Double capacityKg;
-
-    @NotNull(message = "Fuel efficiency is required")
-    private Double fuelEfficiency;
 
     public VehicleDTO() {}
 
-    public VehicleDTO(Long id, String vehicleNumber, Double capacityKg, Double fuelEfficiency) {
+    public VehicleDTO(Long id, String number, String model, Double capacityKg) {
         this.id = id;
-        this.vehicleNumber = vehicleNumber;
+        this.number = number;
+        this.model = model;
         this.capacityKg = capacityKg;
-        this.fuelEfficiency = fuelEfficiency;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters & Setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getVehicleNumber() { return vehicleNumber; }
-    public void setVehicleNumber(String vehicleNumber) { this.vehicleNumber = vehicleNumber; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Double getCapacityKg() { return capacityKg; }
-    public void setCapacityKg(Double capacityKg) { this.capacityKg = capacityKg; }
+    public String getNumber() {
+        return number;
+    }
 
-    public Double getFuelEfficiency() { return fuelEfficiency; }
-    public void setFuelEfficiency(Double fuelEfficiency) { this.fuelEfficiency = fuelEfficiency; }
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public Double getCapacityKg() {
+        return capacityKg;
+    }
+
+    public void setCapacityKg(Double capacityKg) {
+        this.capacityKg = capacityKg;
+    }
 }
