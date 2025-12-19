@@ -1,10 +1,10 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.UserDTO;
-import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +14,10 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+    // ✅ ONLY repository injection
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -27,17 +25,19 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User saved = userRepository.save(user);
-        return mapToDTO(saved);
+
+        dto.setId(saved.getId());
+        return dto;
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(this::mapToDTO)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        return mapToDTO(user);
     }
 
     @Override
@@ -50,6 +50,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found");
+        }
         userRepository.deleteById(id);
     }
 
