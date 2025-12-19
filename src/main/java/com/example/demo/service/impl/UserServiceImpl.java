@@ -13,12 +13,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository repo;
-    private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder) {
-        this.repo = repo;
-        this.encoder = encoder;
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -26,31 +27,37 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(encoder.encode(dto.getPassword()));
-        User saved = repo.save(user);
-        dto.setId(saved.getId());
-        dto.setPassword(null);
-        return dto;
-    }
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-    @Override
-    public List<UserDTO> getAllUsers() {
-        return repo.findAll().stream().map(u -> {
-            UserDTO dto = new UserDTO();
-            dto.setId(u.getId());
-            dto.setName(u.getName());
-            dto.setEmail(u.getEmail());
-            return dto;
-        }).collect(Collectors.toList());
+        User saved = userRepository.save(user);
+        return mapToDTO(saved);
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        User u = repo.findById(id).orElseThrow();
+        return userRepository.findById(id)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    private UserDTO mapToDTO(User user) {
         UserDTO dto = new UserDTO();
-        dto.setId(u.getId());
-        dto.setName(u.getName());
-        dto.setEmail(u.getEmail());
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
         return dto;
     }
 }
