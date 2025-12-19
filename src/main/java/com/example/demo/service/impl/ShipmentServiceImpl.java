@@ -10,9 +10,6 @@ import com.example.demo.repository.VehicleRepository;
 import com.example.demo.service.ShipmentService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
 
@@ -20,11 +17,9 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final LocationRepository locationRepository;
     private final VehicleRepository vehicleRepository;
 
-    public ShipmentServiceImpl(
-            ShipmentRepository shipmentRepository,
-            LocationRepository locationRepository,
-            VehicleRepository vehicleRepository) {
-
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
+                               LocationRepository locationRepository,
+                               VehicleRepository vehicleRepository) {
         this.shipmentRepository = shipmentRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
@@ -32,6 +27,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentDTO createShipment(ShipmentDTO dto) {
+        Shipment shipment = new Shipment();
 
         Location pickup = locationRepository.findById(dto.getPickupLocationId())
                 .orElseThrow(() -> new RuntimeException("Pickup location not found"));
@@ -42,36 +38,21 @@ public class ShipmentServiceImpl implements ShipmentService {
         Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        Shipment shipment = new Shipment();
         shipment.setPickupLocation(pickup);
         shipment.setDropLocation(drop);
         shipment.setVehicle(vehicle);
-        shipment.setWeightKg(dto.getWeightKg());
         shipment.setScheduledDate(dto.getScheduledDate());
+        shipment.setWeightKg(dto.getWeightKg());
 
         Shipment saved = shipmentRepository.save(shipment);
         return mapToDTO(saved);
     }
 
     @Override
-    public List<ShipmentDTO> getAllShipments() {
-        return shipmentRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    // ✅ THIS METHOD WAS MISSING (ERROR FIX)
-    @Override
     public ShipmentDTO getShipmentById(Long id) {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
         return mapToDTO(shipment);
-    }
-
-    @Override
-    public void deleteShipment(Long id) {
-        shipmentRepository.deleteById(id);
     }
 
     private ShipmentDTO mapToDTO(Shipment shipment) {
@@ -80,8 +61,8 @@ public class ShipmentServiceImpl implements ShipmentService {
         dto.setPickupLocationId(shipment.getPickupLocation().getId());
         dto.setDropLocationId(shipment.getDropLocation().getId());
         dto.setVehicleId(shipment.getVehicle().getId());
-        dto.setWeightKg(shipment.getWeightKg());
         dto.setScheduledDate(shipment.getScheduledDate());
+        dto.setWeightKg(shipment.getWeightKg());
         return dto;
     }
 }
