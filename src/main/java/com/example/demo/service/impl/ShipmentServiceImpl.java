@@ -24,6 +24,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             ShipmentRepository shipmentRepository,
             LocationRepository locationRepository,
             VehicleRepository vehicleRepository) {
+
         this.shipmentRepository = shipmentRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
@@ -31,6 +32,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentDTO createShipment(ShipmentDTO dto) {
+
         Location pickup = locationRepository.findById(dto.getPickupLocationId())
                 .orElseThrow(() -> new RuntimeException("Pickup location not found"));
 
@@ -57,6 +59,19 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ✅ THIS METHOD WAS MISSING (ERROR FIX)
+    @Override
+    public ShipmentDTO getShipmentById(Long id) {
+        Shipment shipment = shipmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+        return mapToDTO(shipment);
+    }
+
+    @Override
+    public void deleteShipment(Long id) {
+        shipmentRepository.deleteById(id);
     }
 
     private ShipmentDTO mapToDTO(Shipment shipment) {
