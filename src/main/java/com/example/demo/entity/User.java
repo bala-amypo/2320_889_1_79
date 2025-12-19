@@ -10,21 +10,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
-    private String email;
-    private String password;
 
-    // REQUIRED by JPA
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    // ✅ Constructors
     public User() {
     }
 
-    public User(String name, String email, String password) {
+    public User(Long id, String name, String email) {
+        this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
     }
 
-    // getters and setters
+    // ✅ Getters & Setters
     public Long getId() {
         return id;
     }
@@ -47,13 +49,5 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
