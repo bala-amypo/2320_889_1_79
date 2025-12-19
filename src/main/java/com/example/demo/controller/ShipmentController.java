@@ -2,9 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ShipmentDTO;
 import com.example.demo.service.ShipmentService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,24 +10,24 @@ import java.util.List;
 @RequestMapping("/api/shipments")
 public class ShipmentController {
 
-    private final ShipmentService shipmentService;
+    private final ShipmentService service;
 
-    public ShipmentController(ShipmentService shipmentService) {
-        this.shipmentService = shipmentService;
+    public ShipmentController(ShipmentService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<ShipmentDTO> createShipment(@Valid @RequestBody ShipmentDTO dto) {
-        return new ResponseEntity<>(shipmentService.createShipment(dto), HttpStatus.CREATED);
+    public ShipmentDTO create(@RequestBody ShipmentDTO dto) {
+        return service.createShipment(dto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShipmentDTO> getShipment(@PathVariable Long id) {
-        return ResponseEntity.ok(shipmentService.getShipmentById(id));
+    public ShipmentDTO getById(@PathVariable Long id) {
+        return service.getShipmentById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<ShipmentDTO>> getAllShipments() {
-        return ResponseEntity.ok(shipmentService.getAllShipments());
+    public List<ShipmentDTO> getAll() {
+        return service.getAllShipments();
     }
 }
