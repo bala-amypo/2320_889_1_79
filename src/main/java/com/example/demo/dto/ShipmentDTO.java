@@ -1,23 +1,36 @@
-package demo.dto;
+package com.example.demo.dto;
+
+import java.time.LocalDate;
 
 public class ShipmentDTO {
-    private Long locationId;
-    private Long vehicleId;
 
-    // Getters and Setters
-    public Long getLocationId() {
-        return locationId;
+    private Long id;
+    private Double weightKg;
+    private LocalDate scheduledDate;
+
+    public ShipmentDTO() {}
+
+    public Long getId() {
+        return id;
     }
 
-    public void setLocationId(Long locationId) {
-        this.locationId = locationId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getVehicleId() {
-        return vehicleId;
+    public Double getWeightKg() {
+        return weightKg;
     }
 
-    public void setVehicleId(Long vehicleId) {
-        this.vehicleId = vehicleId;
+    public void setWeightKg(Double weightKg) {
+        this.weightKg = weightKg;
+    }
+
+    public LocalDate getScheduledDate() {
+        return scheduledDate;
+    }
+
+    public void setScheduledDate(LocalDate scheduledDate) {
+        this.scheduledDate = scheduledDate;
     }
 }

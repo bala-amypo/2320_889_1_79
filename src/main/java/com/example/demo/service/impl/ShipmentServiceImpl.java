@@ -48,3 +48,4 @@ public class ShipmentServiceImpl {
         this.dto = dto;
     }
 }
+
