@@ -1,37 +1,52 @@
 package com.example.demo.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 public class VehicleDTO {
 
     private Long id;
-
-    @NotBlank
-    private String model;
-
-    @NotBlank
-    private String number;
-
-    @NotNull
+    private String vehicleNumber;
+    private Double fuelEfficiency;
     private Double capacityKg;
-
     private Long userId;
 
     public VehicleDTO() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getModel() { return model; }
-    public void setModel(String model) { this.model = model; }
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
 
-    public String getNumber() { return number; }
-    public void setNumber(String number) { this.number = number; }
+    public Double getFuelEfficiency() {
+        return fuelEfficiency;
+    }
 
-    public Double getCapacityKg() { return capacityKg; }
-    public void setCapacityKg(Double capacityKg) { this.capacityKg = capacityKg; }
+    public Double getCapacityKg() {
+        return capacityKg;
+    }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
+    }
+
+    public void setFuelEfficiency(Double fuelEfficiency) {
+        this.fuelEfficiency = fuelEfficiency;
+    }
+
+    public void setCapacityKg(Double capacityKg) {
+        this.capacityKg = capacityKg;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }
