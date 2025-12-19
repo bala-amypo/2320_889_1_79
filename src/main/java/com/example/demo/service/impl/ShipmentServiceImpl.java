@@ -4,11 +4,15 @@ import com.example.demo.dto.ShipmentDTO;
 import com.example.demo.entity.Location;
 import com.example.demo.entity.Shipment;
 import com.example.demo.entity.Vehicle;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.LocationRepository;
 import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.repository.VehicleRepository;
 import com.example.demo.service.ShipmentService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
@@ -17,9 +21,11 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final LocationRepository locationRepository;
     private final VehicleRepository vehicleRepository;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
-                               LocationRepository locationRepository,
-                               VehicleRepository vehicleRepository) {
+    public ShipmentServiceImpl(
+            ShipmentRepository shipmentRepository,
+            LocationRepository locationRepository,
+            VehicleRepository vehicleRepository
+    ) {
         this.shipmentRepository = shipmentRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
@@ -27,22 +33,22 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentDTO createShipment(ShipmentDTO dto) {
-        Shipment shipment = new Shipment();
 
         Location pickup = locationRepository.findById(dto.getPickupLocationId())
-                .orElseThrow(() -> new RuntimeException("Pickup location not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
 
         Location drop = locationRepository.findById(dto.getDropLocationId())
-                .orElseThrow(() -> new RuntimeException("Drop location not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Drop location not found"));
 
         Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
+        Shipment shipment = new Shipment();
+        shipment.setScheduledDate(dto.getScheduledDate());
+        shipment.setWeightKg(dto.getWeightKg());
         shipment.setPickupLocation(pickup);
         shipment.setDropLocation(drop);
         shipment.setVehicle(vehicle);
-        shipment.setScheduledDate(dto.getScheduledDate());
-        shipment.setWeightKg(dto.getWeightKg());
 
         Shipment saved = shipmentRepository.save(shipment);
         return mapToDTO(saved);
@@ -51,18 +57,33 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public ShipmentDTO getShipmentById(Long id) {
         Shipment shipment = shipmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
         return mapToDTO(shipment);
+    }
+
+    @Override
+    public List<ShipmentDTO> getAllShipments() {
+        return shipmentRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteShipment(Long id) {
+        Shipment shipment = shipmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
+        shipmentRepository.delete(shipment);
     }
 
     private ShipmentDTO mapToDTO(Shipment shipment) {
         ShipmentDTO dto = new ShipmentDTO();
         dto.setId(shipment.getId());
+        dto.setScheduledDate(shipment.getScheduledDate());
+        dto.setWeightKg(shipment.getWeightKg());
         dto.setPickupLocationId(shipment.getPickupLocation().getId());
         dto.setDropLocationId(shipment.getDropLocation().getId());
         dto.setVehicleId(shipment.getVehicle().getId());
-        dto.setScheduledDate(shipment.getScheduledDate());
-        dto.setWeightKg(shipment.getWeightKg());
         return dto;
     }
 }
