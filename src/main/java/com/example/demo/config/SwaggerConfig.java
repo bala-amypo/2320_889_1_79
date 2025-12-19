@@ -13,7 +13,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Transport Route Optimization API")
-                        .description("API documentation")
-                        .version("1.0"));
+                        .version("1.0")
+                        .description("REST API for route optimization"));
     }
 }
