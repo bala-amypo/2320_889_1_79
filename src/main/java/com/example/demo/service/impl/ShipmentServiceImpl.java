@@ -51,4 +51,13 @@ public class ShipmentServiceImpl implements ShipmentService {
         dto.setScheduledDate(s.getScheduledDate());
         return dto;
     }
+    Location pickup = locationRepository.findById(dto.getPickupLocationId())
+        .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
+
+Location drop = locationRepository.findById(dto.getDropLocationId())
+        .orElseThrow(() -> new ResourceNotFoundException("Drop location not found"));
+
+Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+
 }
