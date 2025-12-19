@@ -5,7 +5,11 @@ import java.util.List;
 
 public interface ShipmentService {
 
-    ShipmentDTO createShipment(ShipmentDTO dto);
-    ShipmentDTO getShipmentById(Long id);
+    ShipmentDTO createShipment(ShipmentDTO shipmentDTO);
+
     List<ShipmentDTO> getAllShipments();
+
+    ShipmentDTO getShipmentById(Long id);   // ⚠ REQUIRED
+
+    void deleteShipment(Long id);
 }

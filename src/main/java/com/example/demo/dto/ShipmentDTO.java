@@ -61,3 +61,4 @@ public class ShipmentDTO {
         this.scheduledDate = scheduledDate;
     }
 }
+
