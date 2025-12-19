@@ -53,4 +53,8 @@ public class VehicleServiceImpl implements VehicleService {
         dto.setCapacityKg(v.getCapacityKg());
         return dto;
     }
+    if (vehicleRepository.existsByVehicleNumber(dto.getVehicleNumber())) {
+    throw new IllegalArgumentException("Vehicle number already exists");
 }
+
+
