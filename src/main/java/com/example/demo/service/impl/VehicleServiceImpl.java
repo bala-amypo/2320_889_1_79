@@ -1,60 +1,43 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.VehicleDTO;
+import com.example.demo.entity.Vehicle;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.Vehicle;
 import com.example.demo.repository.VehicleRepository;
 import com.example.demo.service.VehicleService;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
 
-    private final VehicleRepository repo;
+    private final VehicleRepository vehicleRepository;
 
-    public VehicleServiceImpl(VehicleRepository repo) {
-        this.repo = repo;
+    public VehicleServiceImpl(VehicleRepository vehicleRepository) {
+        this.vehicleRepository = vehicleRepository;
     }
 
     @Override
-    public VehicleDTO createVehicle(VehicleDTO dto) {
-        Vehicle v = new Vehicle();
-        v.setNumber(dto.getNumber());
-        v.setModel(dto.getModel());
-        v.setCapacityKg(dto.getCapacityKg());
+    public Vehicle createVehicle(VehicleDTO dto) {
 
-        Vehicle saved = repo.save(v);
-        dto.setId(saved.getId());
-        return dto;
+        if (vehicleRepository.existsByVehicleNumber(dto.getVehicleNumber())) {
+            throw new IllegalArgumentException("Vehicle number already exists");
+        }
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleNumber(dto.getVehicleNumber());
+        vehicle.setCapacityKg(dto.getCapacityKg());
+        vehicle.setFuelEfficiency(dto.getFuelEfficiency());
+
+        return vehicleRepository.save(vehicle);
     }
 
     @Override
-    public VehicleDTO getVehicleById(Long id) {
-        Vehicle v = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
-        return mapToDTO(v);
-    }
+    public Vehicle getVehicleById(Long id) {
 
-    @Override
-    public List<VehicleDTO> getAllVehicles() {
-        return repo.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return vehicleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Vehicle not found with id " + id)
+                );
     }
-
-    private VehicleDTO mapToDTO(Vehicle v) {
-        VehicleDTO dto = new VehicleDTO();
-        dto.setId(v.getId());
-        dto.setNumber(v.getNumber());
-        dto.setModel(v.getModel());
-        dto.setCapacityKg(v.getCapacityKg());
-        return dto;
-    }
-    if (vehicleRepository.existsByVehicleNumber(dto.getVehicleNumber())) {
-    throw new IllegalArgumentException("Vehicle number already exists");
 }
-
-
