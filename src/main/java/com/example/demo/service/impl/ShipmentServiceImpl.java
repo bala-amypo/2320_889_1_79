@@ -1,63 +1,50 @@
-package com.example.demo.service.impl;
+package demo.service.impl;
 
-import com.example.demo.dto.ShipmentDTO;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.entity.Shipment;
-import com.example.demo.repository.ShipmentRepository;
-import com.example.demo.service.ShipmentService;
+import demo.entity.Location;
+import demo.entity.Vehicle;
+import demo.repository.LocationRepository;
+import demo.repository.VehicleRepository;
+import demo.dto.ShipmentDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
-public class ShipmentServiceImpl implements ShipmentService {
+public class ShipmentServiceImpl {
 
-    private final ShipmentRepository repo;
+    @Autowired
+    private LocationRepository locationRepository;  // Inject the LocationRepository
 
-    public ShipmentServiceImpl(ShipmentRepository repo) {
-        this.repo = repo;
+    @Autowired
+    private VehicleRepository vehicleRepository;  // Inject the VehicleRepository
+
+    private ShipmentDTO dto;  // Declare ShipmentDTO
+
+    // A method to demonstrate usage of repositories and DTO
+    public void someMethod() {
+        if (dto != null) {
+            // Fetch the location by ID from locationRepository
+            Location location = locationRepository.findById(dto.getLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+
+            // Fetch the vehicle by ID from vehicleRepository
+            Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+                    .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+            // You can now use location and vehicle objects in your business logic
+            System.out.println("Location: " + location.getName());
+            System.out.println("Vehicle: " + vehicle.getVehicleNumber());
+        } else {
+            // Handle the case when the dto is null or not initialized
+            System.out.println("DTO is not initialized");
+        }
     }
 
-    @Override
-    public ShipmentDTO createShipment(ShipmentDTO dto) {
-        Shipment s = new Shipment();
-        s.setWeightKg(dto.getWeightKg());
-        s.setScheduledDate(dto.getScheduledDate());
-
-        Shipment saved = repo.save(s);
-        dto.setId(saved.getId());
+    // Getter and Setter for DTO (to set it from outside the service)
+    public ShipmentDTO getDto() {
         return dto;
     }
 
-    @Override
-    public ShipmentDTO getShipmentById(Long id) {
-        Shipment s = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
-        return mapToDTO(s);
+    public void setDto(ShipmentDTO dto) {
+        this.dto = dto;
     }
-
-    @Override
-    public List<ShipmentDTO> getAllShipments() {
-        return repo.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private ShipmentDTO mapToDTO(Shipment s) {
-        ShipmentDTO dto = new ShipmentDTO();
-        dto.setId(s.getId());
-        dto.setWeightKg(s.getWeightKg());
-        dto.setScheduledDate(s.getScheduledDate());
-        return dto;
-    }
-    Location pickup = locationRepository.findById(dto.getPickupLocationId())
-        .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
-
-Location drop = locationRepository.findById(dto.getDropLocationId())
-        .orElseThrow(() -> new ResourceNotFoundException("Drop location not found"));
-
-Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
-        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
-
 }
