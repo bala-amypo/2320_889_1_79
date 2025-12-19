@@ -1,40 +1,65 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 public class RouteOptimizationResultDTO {
 
     private Long id;
-    private Long shipmentId;
+
+    @Positive(message = "Optimized distance must be positive")
     private Double optimizedDistanceKm;
-    private Double estimatedFuelUsage;
+
+    @Positive(message = "Estimated fuel usage must be positive")
+    private Double estimatedFuelUsageL;
+
+    @NotNull(message = "Generated time is required")
     private LocalDateTime generatedAt;
 
     public RouteOptimizationResultDTO() {}
 
-    public RouteOptimizationResultDTO(Long id, Long shipmentId,
-                                      Double optimizedDistanceKm,
-                                      Double estimatedFuelUsage,
-                                      LocalDateTime generatedAt) {
+    public RouteOptimizationResultDTO(
+            Long id,
+            Double optimizedDistanceKm,
+            Double estimatedFuelUsageL,
+            LocalDateTime generatedAt) {
         this.id = id;
-        this.shipmentId = shipmentId;
         this.optimizedDistanceKm = optimizedDistanceKm;
-        this.estimatedFuelUsage = estimatedFuelUsage;
+        this.estimatedFuelUsageL = estimatedFuelUsageL;
         this.generatedAt = generatedAt;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters & Setters
+    public Long getId() {
+        return id;
+    }
 
-    public Long getShipmentId() { return shipmentId; }
-    public void setShipmentId(Long shipmentId) { this.shipmentId = shipmentId; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Double getOptimizedDistanceKm() { return optimizedDistanceKm; }
-    public void setOptimizedDistanceKm(Double optimizedDistanceKm) { this.optimizedDistanceKm = optimizedDistanceKm; }
+    public Double getOptimizedDistanceKm() {
+        return optimizedDistanceKm;
+    }
 
-    public Double getEstimatedFuelUsage() { return estimatedFuelUsage; }
-    public void setEstimatedFuelUsage(Double estimatedFuelUsage) { this.estimatedFuelUsage = estimatedFuelUsage; }
+    public void setOptimizedDistanceKm(Double optimizedDistanceKm) {
+        this.optimizedDistanceKm = optimizedDistanceKm;
+    }
 
-    public LocalDateTime getGeneratedAt() { return generatedAt; }
-    public void setGeneratedAt(LocalDateTime generatedAt) { this.generatedAt = generatedAt; }
+    public Double getEstimatedFuelUsageL() {
+        return estimatedFuelUsageL;
+    }
+
+    public void setEstimatedFuelUsageL(Double estimatedFuelUsageL) {
+        this.estimatedFuelUsageL = estimatedFuelUsageL;
+    }
+
+    public LocalDateTime getGeneratedAt() {
+        return generatedAt;
+    }
+
+    public void setGeneratedAt(LocalDateTime generatedAt) {
+        this.generatedAt = generatedAt;
+    }
 }
