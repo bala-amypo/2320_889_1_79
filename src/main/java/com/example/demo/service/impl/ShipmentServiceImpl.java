@@ -1,51 +1,72 @@
-package demo.service.impl;
+package com.example.demo.service.impl;
 
-import demo.entity.Location;
-import demo.entity.Vehicle;
-import demo.repository.LocationRepository;
-import demo.repository.VehicleRepository;
-import demo.dto.ShipmentDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.dto.ShipmentDTO;
+import com.example.demo.entity.Location;
+import com.example.demo.entity.Shipment;
+import com.example.demo.entity.Vehicle;
+import com.example.demo.repository.LocationRepository;
+import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.repository.VehicleRepository;
+import com.example.demo.service.ShipmentService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class ShipmentServiceImpl {
+public class ShipmentServiceImpl implements ShipmentService {
 
-    @Autowired
-    private LocationRepository locationRepository;  // Inject the LocationRepository
+    private final ShipmentRepository shipmentRepository;
+    private final LocationRepository locationRepository;
+    private final VehicleRepository vehicleRepository;
 
-    @Autowired
-    private VehicleRepository vehicleRepository;  // Inject the VehicleRepository
-
-    private ShipmentDTO dto;  // Declare ShipmentDTO
-
-    // A method to demonstrate usage of repositories and DTO
-    public void someMethod() {
-        if (dto != null) {
-            // Fetch the location by ID from locationRepository
-            Location location = locationRepository.findById(dto.getLocationId())
-                    .orElseThrow(() -> new RuntimeException("Location not found"));
-
-            // Fetch the vehicle by ID from vehicleRepository
-            Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
-                    .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-
-            // You can now use location and vehicle objects in your business logic
-            System.out.println("Location: " + location.getName());
-            System.out.println("Vehicle: " + vehicle.getVehicleNumber());
-        } else {
-            // Handle the case when the dto is null or not initialized
-            System.out.println("DTO is not initialized");
-        }
+    public ShipmentServiceImpl(
+            ShipmentRepository shipmentRepository,
+            LocationRepository locationRepository,
+            VehicleRepository vehicleRepository) {
+        this.shipmentRepository = shipmentRepository;
+        this.locationRepository = locationRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
-    // Getter and Setter for DTO (to set it from outside the service)
-    public ShipmentDTO getDto() {
+    @Override
+    public ShipmentDTO createShipment(ShipmentDTO dto) {
+        Location pickup = locationRepository.findById(dto.getPickupLocationId())
+                .orElseThrow(() -> new RuntimeException("Pickup location not found"));
+
+        Location drop = locationRepository.findById(dto.getDropLocationId())
+                .orElseThrow(() -> new RuntimeException("Drop location not found"));
+
+        Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        Shipment shipment = new Shipment();
+        shipment.setPickupLocation(pickup);
+        shipment.setDropLocation(drop);
+        shipment.setVehicle(vehicle);
+        shipment.setWeightKg(dto.getWeightKg());
+        shipment.setScheduledDate(dto.getScheduledDate());
+
+        Shipment saved = shipmentRepository.save(shipment);
+        return mapToDTO(saved);
+    }
+
+    @Override
+    public List<ShipmentDTO> getAllShipments() {
+        return shipmentRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ShipmentDTO mapToDTO(Shipment shipment) {
+        ShipmentDTO dto = new ShipmentDTO();
+        dto.setId(shipment.getId());
+        dto.setPickupLocationId(shipment.getPickupLocation().getId());
+        dto.setDropLocationId(shipment.getDropLocation().getId());
+        dto.setVehicleId(shipment.getVehicle().getId());
+        dto.setWeightKg(shipment.getWeightKg());
+        dto.setScheduledDate(shipment.getScheduledDate());
         return dto;
     }
-
-    public void setDto(ShipmentDTO dto) {
-        this.dto = dto;
-    }
 }
-

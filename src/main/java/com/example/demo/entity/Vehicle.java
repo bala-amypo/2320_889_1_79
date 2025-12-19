@@ -3,14 +3,17 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "vehicles")
 public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String number;
-    private String model;
+    private String vehicleNumber;
+
+    private Double fuelEfficiency;
+
     private Double capacityKg;
 
     public Vehicle() {}
@@ -19,28 +22,24 @@ public class Vehicle {
         return id;
     }
 
-    public String getNumber() {
-        return number;
+    public String getVehicleNumber() {
+        return vehicleNumber;
     }
 
-    public String getModel() {
-        return model;
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
+    }
+
+    public Double getFuelEfficiency() {
+        return fuelEfficiency;
+    }
+
+    public void setFuelEfficiency(Double fuelEfficiency) {
+        this.fuelEfficiency = fuelEfficiency;
     }
 
     public Double getCapacityKg() {
         return capacityKg;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
     }
 
     public void setCapacityKg(Double capacityKg) {
