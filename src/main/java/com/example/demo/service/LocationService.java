@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Location;
-
+import com.example.demo.dto.LocationDTO;
 import java.util.List;
 
 public interface LocationService {
-
-    Location createLocation(Location location);
-
-    List<Location> getAllLocations();
+    LocationDTO createLocation(LocationDTO dto);
+    LocationDTO getLocationById(Long id);
+    List<LocationDTO> getAllLocations();
 }

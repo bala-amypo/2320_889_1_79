@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.User;
+import com.example.demo.dto.UserDTO;
+import java.util.List;
 
 public interface UserService {
-
-    User findByEmail(String email);
-
-    User register(User user);
+    UserDTO createUser(UserDTO userDTO);
+    UserDTO getUserById(Long id);
+    List<UserDTO> getAllUsers();
+    void deleteUser(Long id);
 }
