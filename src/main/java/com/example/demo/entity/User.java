@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
 public class User {
 
     @Id
@@ -16,9 +16,8 @@ public class User {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String email;   // ✅ LOGIN FIELD
+    private String email;
 
-    @Column(nullable = false)
     private String password;
 
     private String role;
