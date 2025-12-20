@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.*;
 import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +16,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
-        return userService.login(request);
+        return userService.login(request); // ✅ MATCHES
     }
 }
