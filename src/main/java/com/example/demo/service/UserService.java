@@ -1,13 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.*;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserDTO createUser(UserDTO userDTO);
+    UserDTO createUser(UserDTO dto);
 
     UserDTO getUserById(Long id);
 
@@ -15,5 +14,5 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    String login(AuthRequest request);
+    AuthResponse login(AuthRequest request);
 }

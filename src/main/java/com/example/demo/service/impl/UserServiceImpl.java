@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.*;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
@@ -30,23 +29,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createUser(UserDTO dto) {
         User user = new User();
-        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userRepository.save(user);
-        return dto;
+        user.setRole(dto.getRole());
+
+        User saved = userRepository.save(user);
+        return mapToDTO(saved);
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return new UserDTO(user.getUsername(), null);
+        return userRepository.findById(id)
+                .map(this::mapToDTO)
+                .orElseThrow();
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(u -> new UserDTO(u.getUsername(), null))
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -56,13 +58,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(AuthRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
+    public AuthResponse login(AuthRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-        return jwtUtil.generateToken(user.getUsername());
+
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return new AuthResponse(token);
+    }
+
+    private UserDTO mapToDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getEmail(),
+                null,
+                user.getRole()
+        );
     }
 }
