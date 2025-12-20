@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,84 +15,55 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder,
-                           JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public UserDTO createUser(UserDTO dto) {
         User user = new User();
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(passwordEncoder.encode("password"));
         user.setRole(dto.getRole());
 
         User saved = userRepository.save(user);
-        return mapToDTO(saved);
-    }
-
-    @Override
-    public UserDTO getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(this::mapToDTO)
-                .orElseThrow();
-    }
-
-    @Override
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        return new UserDTO(saved.getId(), saved.getEmail(), saved.getRole());
     }
 
     @Override
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-
         return new AuthResponse(token);
     }
+
     @Override
-public AuthResponse login(AuthRequest request) {
-
-    User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new RuntimeException("Invalid email"));
-
-    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        throw new RuntimeException("Invalid password");
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(u -> new UserDTO(u.getId(), u.getEmail(), u.getRole()))
+                .collect(Collectors.toList());
     }
 
-    String token = jwtUtil.generateToken(user.getEmail());
+    @Override
+    public UserDTO getUserById(Long id) {
+        User u = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDTO(u.getId(), u.getEmail(), u.getRole());
+    }
 
-    return new AuthResponse(token);
-}
-
-
-    private UserDTO mapToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getEmail(),
-                null,
-                user.getRole()
-        );
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }
