@@ -1,9 +1,12 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
-import com.example.demo.repository.*;
+import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.service.RouteOptimizationService;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
@@ -15,7 +18,7 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     }
 
     @Override
-    public Shipment optimizeRoute(Long shipmentId) {
+    public Map<String, Object> optimizeRoute(Long shipmentId) {
 
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
@@ -28,9 +31,17 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
                 Math.pow(pickup.getLongitude() - drop.getLongitude(), 2)
         ) * 111;
 
-        shipment.setOptimizedDistanceKm(distance);
-        shipment.setEstimatedFuelUsageL(distance / 10);
+        double fuelUsage = distance / 10;
 
-        return shipmentRepository.save(shipment);
+        shipment.setOptimizedDistanceKm(distance);
+        shipment.setEstimatedFuelUsageL(fuelUsage);
+        shipmentRepository.save(shipment);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("shipmentId", shipment.getId());
+        response.put("optimizedDistanceKm", distance);
+        response.put("estimatedFuelUsageL", fuelUsage);
+
+        return response;
     }
 }
