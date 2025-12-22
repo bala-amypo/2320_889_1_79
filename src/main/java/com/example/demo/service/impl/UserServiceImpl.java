@@ -1,12 +1,10 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,55 +13,68 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private UserDTO mapToDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPassword()
+        );
+    }
 
-    @Override
-    public UserDTO createUser(UserDTO dto) {
-        User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setRole(dto.getRole());
-
-        User saved = userRepository.save(user);
-        return new UserDTO(saved.getId(), saved.getEmail(), saved.getRole());
+    private User mapToEntity(UserDTO dto) {
+        return new User(
+                dto.getId(),
+                dto.getName(),
+                dto.getEmail(),
+                dto.getPassword()
+        );
     }
 
     @Override
-    public AuthResponse login(AuthRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
-
-        String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token);
-    }
-
-    @Override
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(u -> new UserDTO(u.getId(), u.getEmail(), u.getRole()))
-                .collect(Collectors.toList());
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = mapToEntity(userDTO);
+        return mapToDTO(userRepository.save(user));
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        User u = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(u.getId(), u.getEmail(), u.getRole());
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        return mapToDTO(user);
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+
+        return mapToDTO(userRepository.save(user));
     }
 
     @Override
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id " + id);
+        }
         userRepository.deleteById(id);
     }
 }

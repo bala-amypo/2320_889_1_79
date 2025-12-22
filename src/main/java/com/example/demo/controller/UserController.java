@@ -4,7 +4,6 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,23 +19,30 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
-        return new ResponseEntity<>(userService.createUser(userDTO), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDTO createUser(@Valid @RequestBody UserDTO userDTO) {
+        return userService.createUser(userDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public UserDTO getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public List<UserDTO> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @PutMapping("/{id}")
+    public UserDTO updateUser(@PathVariable Long id,
+                              @Valid @RequestBody UserDTO userDTO) {
+        return userService.updateUser(id, userDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
     }
 }
