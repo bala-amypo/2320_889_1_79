@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.VehicleDTO;
 import com.example.demo.entity.Vehicle;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VehicleRepository;
 import com.example.demo.service.VehicleService;
 import org.springframework.stereotype.Service;
@@ -18,22 +19,35 @@ public class VehicleServiceImpl implements VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    @Override
-    public VehicleDTO createVehicle(VehicleDTO dto) {
-        Vehicle vehicle = new Vehicle();
-        vehicle.setVehicleNumber(dto.getVehicleNumber());
-        vehicle.setFuelEfficiency(dto.getFuelEfficiency());
-        vehicle.setCapacityKg(dto.getCapacityKg());
+    private VehicleDTO mapToDTO(Vehicle vehicle) {
+        return new VehicleDTO(
+                vehicle.getId(),
+                vehicle.getVehicleNumber(),
+                vehicle.getModel(),
+                vehicle.getCapacityKg()
+        );
+    }
 
-        Vehicle saved = vehicleRepository.save(vehicle);
-        return mapToDTO(saved);
+    private Vehicle mapToEntity(VehicleDTO dto) {
+        return new Vehicle(
+                dto.getId(),
+                dto.getVehicleNumber(),
+                dto.getModel(),
+                dto.getCapacityKg()
+        );
+    }
+
+    @Override
+    public VehicleDTO createVehicle(VehicleDTO vehicleDTO) {
+        Vehicle vehicle = mapToEntity(vehicleDTO);
+        return mapToDTO(vehicleRepository.save(vehicle));
     }
 
     @Override
     public VehicleDTO getVehicleById(Long id) {
-        return vehicleRepository.findById(id)
-                .map(this::mapToDTO)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id " + id));
+        return mapToDTO(vehicle);
     }
 
     @Override
@@ -45,16 +59,22 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public void deleteVehicle(Long id) {
-        vehicleRepository.deleteById(id);
+    public VehicleDTO updateVehicle(Long id, VehicleDTO vehicleDTO) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id " + id));
+
+        vehicle.setVehicleNumber(vehicleDTO.getVehicleNumber());
+        vehicle.setModel(vehicleDTO.getModel());
+        vehicle.setCapacityKg(vehicleDTO.getCapacityKg());
+
+        return mapToDTO(vehicleRepository.save(vehicle));
     }
 
-    private VehicleDTO mapToDTO(Vehicle vehicle) {
-        VehicleDTO dto = new VehicleDTO();
-        dto.setId(vehicle.getId());
-        dto.setVehicleNumber(vehicle.getVehicleNumber());
-        dto.setFuelEfficiency(vehicle.getFuelEfficiency());
-        dto.setCapacityKg(vehicle.getCapacityKg());
-        return dto;
+    @Override
+    public void deleteVehicle(Long id) {
+        if (!vehicleRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Vehicle not found with id " + id);
+        }
+        vehicleRepository.deleteById(id);
     }
 }
