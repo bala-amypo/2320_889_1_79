@@ -1,15 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.VehicleDTO;
-import com.example.demo.service.VehicleService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.entity.Vehicle;
+import com.example.demo.service.VehicleService;
+
 @RestController
-@RequestMapping("/api/vehicles")
+@RequestMapping("/vehicles")
 public class VehicleController {
 
     private final VehicleService vehicleService;
@@ -19,29 +18,26 @@ public class VehicleController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public VehicleDTO createVehicle(@Valid @RequestBody VehicleDTO vehicleDTO) {
-        return vehicleService.createVehicle(vehicleDTO);
+    public Vehicle createVehicle(@RequestBody Vehicle vehicle) {
+        return vehicleService.createVehicle(vehicle);
     }
 
     @GetMapping("/{id}")
-    public VehicleDTO getVehicle(@PathVariable Long id) {
+    public Vehicle getVehicle(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
 
     @GetMapping
-    public List<VehicleDTO> getAllVehicles() {
+    public List<Vehicle> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 
     @PutMapping("/{id}")
-    public VehicleDTO updateVehicle(@PathVariable Long id,
-                                    @Valid @RequestBody VehicleDTO vehicleDTO) {
-        return vehicleService.updateVehicle(id, vehicleDTO);
+    public Vehicle updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+        return vehicleService.updateVehicle(id, vehicle);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVehicle(@PathVariable Long id) {
         vehicleService.deleteVehicle(id);
     }

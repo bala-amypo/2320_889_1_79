@@ -1,18 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.VehicleDTO;
-
 import java.util.List;
+import com.example.demo.entity.Vehicle;
 
 public interface VehicleService {
 
-    VehicleDTO createVehicle(VehicleDTO vehicleDTO);
+    Vehicle createVehicle(Vehicle vehicle);
 
-    VehicleDTO getVehicleById(Long id);
+    Vehicle getVehicleById(Long id);
 
-    List<VehicleDTO> getAllVehicles();
+    List<Vehicle> getAllVehicles();
 
-    VehicleDTO updateVehicle(Long id, VehicleDTO vehicleDTO);
+    Vehicle updateVehicle(Long id, Vehicle vehicle);
 
     void deleteVehicle(Long id);
 }
