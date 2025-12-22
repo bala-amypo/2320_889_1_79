@@ -4,7 +4,6 @@ import com.example.demo.dto.LocationDTO;
 import com.example.demo.service.LocationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +19,30 @@ public class LocationController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationDTO> createLocation(@Valid @RequestBody LocationDTO dto) {
-        return new ResponseEntity<>(locationService.createLocation(dto), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public LocationDTO createLocation(@Valid @RequestBody LocationDTO locationDTO) {
+        return locationService.createLocation(locationDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LocationDTO> getLocation(@PathVariable Long id) {
-        return ResponseEntity.ok(locationService.getLocationById(id));
+    public LocationDTO getLocation(@PathVariable Long id) {
+        return locationService.getLocationById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<LocationDTO>> getAllLocations() {
-        return ResponseEntity.ok(locationService.getAllLocations());
+    public List<LocationDTO> getAllLocations() {
+        return locationService.getAllLocations();
+    }
+
+    @PutMapping("/{id}")
+    public LocationDTO updateLocation(@PathVariable Long id,
+                                      @Valid @RequestBody LocationDTO locationDTO) {
+        return locationService.updateLocation(id, locationDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLocation(@PathVariable Long id) {
+        locationService.deleteLocation(id);
     }
 }
