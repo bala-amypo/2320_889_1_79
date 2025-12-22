@@ -1,12 +1,9 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.Shipment;
-import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.RouteOptimizationService;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
@@ -18,22 +15,22 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     }
 
     @Override
-    public Map<String, Object> optimizeRoute(Long shipmentId) {
+    public Shipment optimizeRoute(Long shipmentId) {
 
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
 
-        // Simple optimization logic (test-case friendly)
-        double distance = shipment.getDistance();
-        double fuelEfficiency = shipment.getVehicle().getFuelEfficiency();
-        double fuelRequired = distance / fuelEfficiency;
+        Location pickup = shipment.getPickupLocation();
+        Location drop = shipment.getDropLocation();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("shipmentId", shipment.getId());
-        result.put("optimizedDistance", distance);
-        result.put("fuelRequired", fuelRequired);
-        result.put("vehicleNumber", shipment.getVehicle().getVehicleNumber());
+        double distance = Math.sqrt(
+                Math.pow(pickup.getLatitude() - drop.getLatitude(), 2) +
+                Math.pow(pickup.getLongitude() - drop.getLongitude(), 2)
+        ) * 111;
 
-        return result;
+        shipment.setOptimizedDistanceKm(distance);
+        shipment.setEstimatedFuelUsageL(distance / 10);
+
+        return shipmentRepository.save(shipment);
     }
 }
