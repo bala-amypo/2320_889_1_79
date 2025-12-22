@@ -1,14 +1,13 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.LocationDTO;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.example.demo.entity.Location;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.LocationRepository;
 import com.example.demo.service.LocationService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -19,62 +18,33 @@ public class LocationServiceImpl implements LocationService {
         this.locationRepository = locationRepository;
     }
 
-    private LocationDTO mapToDTO(Location location) {
-        return new LocationDTO(
-                location.getId(),
-                location.getName(),
-                location.getLatitude(),
-                location.getLongitude()
-        );
-    }
-
-    private Location mapToEntity(LocationDTO dto) {
-        return new Location(
-                dto.getId(),
-                dto.getName(),
-                dto.getLatitude(),
-                dto.getLongitude()
-        );
+    @Override
+    public Location createLocation(Location location) {
+        return locationRepository.save(location);
     }
 
     @Override
-    public LocationDTO createLocation(LocationDTO locationDTO) {
-        Location location = mapToEntity(locationDTO);
-        return mapToDTO(locationRepository.save(location));
-    }
-
-    @Override
-    public LocationDTO getLocationById(Long id) {
-        Location location = locationRepository.findById(id)
+    public Location getLocationById(Long id) {
+        return locationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found with id " + id));
-        return mapToDTO(location);
     }
 
     @Override
-    public List<LocationDTO> getAllLocations() {
-        return locationRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public List<Location> getAllLocations() {
+        return locationRepository.findAll();
     }
 
     @Override
-    public LocationDTO updateLocation(Long id, LocationDTO locationDTO) {
-        Location location = locationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Location not found with id " + id));
-
-        location.setName(locationDTO.getName());
-        location.setLatitude(locationDTO.getLatitude());
-        location.setLongitude(locationDTO.getLongitude());
-
-        return mapToDTO(locationRepository.save(location));
+    public Location updateLocation(Long id, Location location) {
+        Location existing = getLocationById(id);
+        existing.setName(location.getName());
+        existing.setLatitude(location.getLatitude());
+        existing.setLongitude(location.getLongitude());
+        return locationRepository.save(existing);
     }
 
     @Override
     public void deleteLocation(Long id) {
-        if (!locationRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Location not found with id " + id);
-        }
         locationRepository.deleteById(id);
     }
 }
