@@ -12,9 +12,6 @@ public class Vehicle {
     private String vehicleNumber;
     private Double fuelEfficiency;
 
-    public Vehicle() {
-    }
-
     public Long getId() {
         return id;
     }
