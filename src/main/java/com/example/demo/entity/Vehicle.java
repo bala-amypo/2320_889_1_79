@@ -3,56 +3,35 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "vehicles")
 public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String number;
-    private String model;
-    private double capacityKg;
+    private String vehicleNumber;
+    private Double fuelEfficiency;
 
     public Vehicle() {
-    }
-
-    public Vehicle(Long id, String number, String model, double capacityKg) {
-        this.id = id;
-        this.number = number;
-        this.model = model;
-        this.capacityKg = capacityKg;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getVehicleNumber() {
+        return vehicleNumber;
     }
 
-    public String getNumber() {
-        return number;
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public Double getFuelEfficiency() {
+        return fuelEfficiency;
     }
 
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public double getCapacityKg() {
-        return capacityKg;
-    }
-
-    public void setCapacityKg(double capacityKg) {
-        this.capacityKg = capacityKg;
+    public void setFuelEfficiency(Double fuelEfficiency) {
+        this.fuelEfficiency = fuelEfficiency;
     }
 }
