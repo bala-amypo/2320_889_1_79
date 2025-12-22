@@ -21,14 +21,23 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final LocationRepository locationRepository;
     private final VehicleRepository vehicleRepository;
 
-    public ShipmentServiceImpl(
-            ShipmentRepository shipmentRepository,
-            LocationRepository locationRepository,
-            VehicleRepository vehicleRepository
-    ) {
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
+                               LocationRepository locationRepository,
+                               VehicleRepository vehicleRepository) {
         this.shipmentRepository = shipmentRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
+    }
+
+    private ShipmentDTO mapToDTO(Shipment shipment) {
+        return new ShipmentDTO(
+                shipment.getId(),
+                shipment.getScheduledDate(),
+                shipment.getWeightKg(),
+                shipment.getPickupLocation().getId(),
+                shipment.getDropLocation().getId(),
+                shipment.getVehicle().getId()
+        );
     }
 
     @Override
@@ -50,14 +59,13 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipment.setDropLocation(drop);
         shipment.setVehicle(vehicle);
 
-        Shipment saved = shipmentRepository.save(shipment);
-        return mapToDTO(saved);
+        return mapToDTO(shipmentRepository.save(shipment));
     }
 
     @Override
     public ShipmentDTO getShipmentById(Long id) {
         Shipment shipment = shipmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found with id " + id));
         return mapToDTO(shipment);
     }
 
@@ -70,20 +78,34 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public void deleteShipment(Long id) {
+    public ShipmentDTO updateShipment(Long id, ShipmentDTO dto) {
+
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
-        shipmentRepository.delete(shipment);
+
+        Location pickup = locationRepository.findById(dto.getPickupLocationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
+
+        Location drop = locationRepository.findById(dto.getDropLocationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Drop location not found"));
+
+        Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+
+        shipment.setScheduledDate(dto.getScheduledDate());
+        shipment.setWeightKg(dto.getWeightKg());
+        shipment.setPickupLocation(pickup);
+        shipment.setDropLocation(drop);
+        shipment.setVehicle(vehicle);
+
+        return mapToDTO(shipmentRepository.save(shipment));
     }
 
-    private ShipmentDTO mapToDTO(Shipment shipment) {
-        ShipmentDTO dto = new ShipmentDTO();
-        dto.setId(shipment.getId());
-        dto.setScheduledDate(shipment.getScheduledDate());
-        dto.setWeightKg(shipment.getWeightKg());
-        dto.setPickupLocationId(shipment.getPickupLocation().getId());
-        dto.setDropLocationId(shipment.getDropLocation().getId());
-        dto.setVehicleId(shipment.getVehicle().getId());
-        return dto;
+    @Override
+    public void deleteShipment(Long id) {
+        if (!shipmentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Shipment not found with id " + id);
+        }
+        shipmentRepository.deleteById(id);
     }
 }

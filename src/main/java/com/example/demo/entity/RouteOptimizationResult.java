@@ -11,67 +11,48 @@ public class RouteOptimizationResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Shipment shipment;
-
     private Double optimizedDistanceKm;
 
-    private Double estimatedFuelUsageL;
+    private Double estimatedFuelUsage;
 
     private LocalDateTime generatedAt;
 
-    // No-args constructor
-    public RouteOptimizationResult() {
-    }
+    @OneToOne
+    @JoinColumn(name = "shipment_id", nullable = false)
+    private Shipment shipment;
 
-    // All-args constructor
-    public RouteOptimizationResult(Long id, Shipment shipment, Double optimizedDistanceKm,
-                                   Double estimatedFuelUsageL, LocalDateTime generatedAt) {
+    public RouteOptimizationResult() {}
+
+    public RouteOptimizationResult(Long id, Double optimizedDistanceKm,
+                                   Double estimatedFuelUsage,
+                                   LocalDateTime generatedAt,
+                                   Shipment shipment) {
         this.id = id;
-        this.shipment = shipment;
         this.optimizedDistanceKm = optimizedDistanceKm;
-        this.estimatedFuelUsageL = estimatedFuelUsageL;
+        this.estimatedFuelUsage = estimatedFuelUsage;
         this.generatedAt = generatedAt;
+        this.shipment = shipment;
     }
 
     // Getters & Setters
-    public Long getId() {
-        return id;
-    }
- 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Shipment getShipment() {
-        return shipment;
-    }
- 
-    public void setShipment(Shipment shipment) {
-        this.shipment = shipment;
-    }
-
-    public Double getOptimizedDistanceKm() {
-        return optimizedDistanceKm;
-    }
- 
+    public Double getOptimizedDistanceKm() { return optimizedDistanceKm; }
     public void setOptimizedDistanceKm(Double optimizedDistanceKm) {
         this.optimizedDistanceKm = optimizedDistanceKm;
     }
 
-    public Double getEstimatedFuelUsageL() {
-        return estimatedFuelUsageL;
-    }
- 
-    public void setEstimatedFuelUsageL(Double estimatedFuelUsageL) {
-        this.estimatedFuelUsageL = estimatedFuelUsageL;
+    public Double getEstimatedFuelUsage() { return estimatedFuelUsage; }
+    public void setEstimatedFuelUsage(Double estimatedFuelUsage) {
+        this.estimatedFuelUsage = estimatedFuelUsage;
     }
 
-    public LocalDateTime getGeneratedAt() {
-        return generatedAt;
-    }
- 
+    public LocalDateTime getGeneratedAt() { return generatedAt; }
     public void setGeneratedAt(LocalDateTime generatedAt) {
         this.generatedAt = generatedAt;
     }
+
+    public Shipment getShipment() { return shipment; }
+    public void setShipment(Shipment shipment) { this.shipment = shipment; }
 }
