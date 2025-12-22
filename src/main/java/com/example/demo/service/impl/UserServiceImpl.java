@@ -1,14 +1,12 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.entity.User;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,62 +17,35 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    private UserDTO mapToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPassword()
-        );
-    }
-
-    private User mapToEntity(UserDTO dto) {
-        return new User(
-                dto.getId(),
-                dto.getName(),
-                dto.getEmail(),
-                dto.getPassword()
-        );
+    @Override
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = mapToEntity(userDTO);
-        return mapToDTO(userRepository.save(user));
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
-        return mapToDTO(user);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
+    public User updateUser(Long id, User user) {
+        User existing = userRepository.findById(id).orElse(null);
+        if (existing == null) return null;
 
-    @Override
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        existing.setName(user.getName());
+        existing.setEmail(user.getEmail());
+        existing.setPassword(user.getPassword());
 
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
-
-        return mapToDTO(userRepository.save(user));
+        return userRepository.save(existing);
     }
 
     @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id " + id);
-        }
         userRepository.deleteById(id);
     }
 }
