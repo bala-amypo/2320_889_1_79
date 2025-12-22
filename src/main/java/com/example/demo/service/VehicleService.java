@@ -7,6 +7,10 @@ public interface VehicleService {
 
     Vehicle createVehicle(Vehicle vehicle);
 
+    Vehicle getVehicleById(Long id);
+
+    Vehicle updateVehicle(Long id, Vehicle vehicle);
+
     List<Vehicle> getAllVehicles();
 
     void deleteVehicle(Long id);

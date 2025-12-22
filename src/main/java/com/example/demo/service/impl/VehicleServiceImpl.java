@@ -22,6 +22,21 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public Vehicle getVehicleById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+    }
+
+    @Override
+    public Vehicle updateVehicle(Long id, Vehicle vehicle) {
+        Vehicle existing = getVehicleById(id);
+        existing.setNumber(vehicle.getNumber());
+        existing.setCapacityKg(vehicle.getCapacityKg());
+        existing.setModel(vehicle.getModel());
+        return repository.save(existing);
+    }
+
+    @Override
     public List<Vehicle> getAllVehicles() {
         return repository.findAll();
     }
