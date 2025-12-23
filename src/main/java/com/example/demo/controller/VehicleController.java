@@ -1,44 +1,32 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.Vehicle;
 import com.example.demo.service.VehicleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/vehicles")
 public class VehicleController {
-
-    private final VehicleService vehicleService;
-
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
+    
+    @Autowired
+    private VehicleService vehicleService;
+    
+    @PostMapping("/user/{userId}")
+    public ResponseEntity<?> addVehicle(@PathVariable Long userId, @RequestBody Vehicle vehicle) {
+        Vehicle savedVehicle = vehicleService.addVehicle(userId, vehicle);
+        return ResponseEntity.ok(savedVehicle);
     }
-
-    @PostMapping
-    public Vehicle createVehicle(@RequestBody Vehicle vehicle) {
-        return vehicleService.createVehicle(vehicle);
+    
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(vehicleService.getVehiclesByUser(userId));
     }
-
+    
     @GetMapping("/{id}")
-    public Vehicle getVehicle(@PathVariable Long id) {
-        return vehicleService.getVehicleById(id);
-    }
-
-    @GetMapping
-    public List<Vehicle> getAllVehicles() {
-        return vehicleService.getAllVehicles();
-    }
-
-    @PutMapping("/{id}")
-    public Vehicle updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
-        return vehicleService.updateVehicle(id, vehicle);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteVehicle(@PathVariable Long id) {
-        vehicleService.deleteVehicle(id);
+    public ResponseEntity<Vehicle> getVehicle(@PathVariable Long id) {
+        return ResponseEntity.ok(vehicleService.findById(id));
     }
 }
