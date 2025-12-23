@@ -5,25 +5,43 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "vehicles")
 public class Vehicle {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String number;
-    private String model;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    @Column(unique = true)
+    private String vehicleNumber;
+    
     private Double capacityKg;
-
-    // getters & setters
+    
+    private Double fuelEfficiency;
+    
+    public Vehicle() {}
+    
+    public Vehicle(User user, String vehicleNumber, Double capacityKg, Double fuelEfficiency) {
+        this.user = user;
+        this.vehicleNumber = vehicleNumber;
+        this.capacityKg = capacityKg;
+        this.fuelEfficiency = fuelEfficiency;
+    }
+    
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public String getNumber() { return number; }
-    public void setNumber(String number) { this.number = number; }
-
-    public String getModel() { return model; }
-    public void setModel(String model) { this.model = model; }
-
+    
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    
+    public String getVehicleNumber() { return vehicleNumber; }
+    public void setVehicleNumber(String vehicleNumber) { this.vehicleNumber = vehicleNumber; }
+    
     public Double getCapacityKg() { return capacityKg; }
     public void setCapacityKg(Double capacityKg) { this.capacityKg = capacityKg; }
+    
+    public Double getFuelEfficiency() { return fuelEfficiency; }
+    public void setFuelEfficiency(Double fuelEfficiency) { this.fuelEfficiency = fuelEfficiency; }
 }
