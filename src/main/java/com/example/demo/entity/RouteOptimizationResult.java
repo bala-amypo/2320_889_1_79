@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,26 +11,36 @@ public class RouteOptimizationResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "shipment_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
     
+    @NotNull
+    @Positive
     private Double optimizedDistanceKm;
     
+    @NotNull
+    @Positive
     private Double estimatedFuelUsageL;
     
+    @NotNull
     private LocalDateTime generatedAt;
     
-    public RouteOptimizationResult() {
-        this.generatedAt = LocalDateTime.now();
-    }
+    public RouteOptimizationResult() {}
     
     public RouteOptimizationResult(Shipment shipment, Double optimizedDistanceKm, 
-                                   Double estimatedFuelUsageL) {
+                                   Double estimatedFuelUsageL, LocalDateTime generatedAt) {
         this.shipment = shipment;
         this.optimizedDistanceKm = optimizedDistanceKm;
         this.estimatedFuelUsageL = estimatedFuelUsageL;
-        this.generatedAt = LocalDateTime.now();
+        this.generatedAt = generatedAt;
+    }
+    
+    @PrePersist
+    protected void onCreate() {
+        if (generatedAt == null) {
+            generatedAt = LocalDateTime.now();
+        }
     }
     
     // Getters and Setters

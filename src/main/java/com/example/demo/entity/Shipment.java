@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 @Entity
@@ -10,20 +11,23 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
     
-    @ManyToOne
-    @JoinColumn(name = "pickup_location_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "pickup_location_id", nullable = false)
     private Location pickupLocation;
     
-    @ManyToOne
-    @JoinColumn(name = "drop_location_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "drop_location_id", nullable = false)
     private Location dropLocation;
     
+    @NotNull
+    @Positive
     private Double weightKg;
     
+    @NotNull
     private LocalDate scheduledDate;
     
     public Shipment() {}

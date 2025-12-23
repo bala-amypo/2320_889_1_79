@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "locations")
@@ -9,10 +10,14 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
     
+    @NotNull
     private Double latitude;
     
+    @NotNull
     private Double longitude;
     
     public Location() {}
