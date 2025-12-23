@@ -1,23 +1,32 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
-@Table(name = "vehicles")
+@Table(name = "vehicles", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "vehicleNumber")
+})
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    @NotBlank
+    @Size(min = 2, max = 50)
     @Column(unique = true)
     private String vehicleNumber;
     
+    @NotNull
+    @Positive
     private Double capacityKg;
     
+    @NotNull
+    @Positive
     private Double fuelEfficiency;
     
     public Vehicle() {}
