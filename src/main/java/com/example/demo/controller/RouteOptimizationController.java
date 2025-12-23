@@ -2,25 +2,37 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.RouteOptimizationResult;
 import com.example.demo.service.RouteOptimizationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/optimize")
+@RequestMapping("/api/optimize")
 public class RouteOptimizationController {
     
-    @Autowired
-    private RouteOptimizationService routeOptimizationService;
+    private final RouteOptimizationService routeOptimizationService;
     
-    @PostMapping("/{shipmentId}")
-    public ResponseEntity<RouteOptimizationResult> optimizeRoute(@PathVariable Long shipmentId) {
-        RouteOptimizationResult result = routeOptimizationService.optimizeRoute(shipmentId);
-        return ResponseEntity.ok(result);
+    public RouteOptimizationController(RouteOptimizationService routeOptimizationService) {
+        this.routeOptimizationService = routeOptimizationService;
     }
     
-    @GetMapping("/{resultId}")
-    public ResponseEntity<RouteOptimizationResult> getResult(@PathVariable Long resultId) {
-        return ResponseEntity.ok(routeOptimizationService.getResult(resultId));
+    @PostMapping("/{shipmentId}")
+    public ResponseEntity<?> optimizeRoute(@PathVariable Long shipmentId) {
+        try {
+            RouteOptimizationResult result = routeOptimizationService.optimizeRoute(shipmentId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    
+    @GetMapping("/result/{resultId}")
+    public ResponseEntity<?> getResult(@PathVariable Long resultId) {
+        try {
+            RouteOptimizationResult result = routeOptimizationService.getResult(resultId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
