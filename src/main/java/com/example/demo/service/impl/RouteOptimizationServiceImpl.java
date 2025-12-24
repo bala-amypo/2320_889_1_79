@@ -15,17 +15,23 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     private final ShipmentRepository shipmentRepository;
     private final RouteOptimizationResultRepository resultRepository;
 
-    public RouteOptimizationServiceImpl(ShipmentRepository shipmentRepository,
-                                        RouteOptimizationResultRepository resultRepository) {
+    public RouteOptimizationServiceImpl(
+            ShipmentRepository shipmentRepository,
+            RouteOptimizationResultRepository resultRepository
+    ) {
         this.shipmentRepository = shipmentRepository;
         this.resultRepository = resultRepository;
     }
 
     @Override
-    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
+    public boolean optimizeRoute(Long shipmentId) {
 
         Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment Not Found"));
+                .orElse(null);
+
+        if (shipment == null) {
+            return false;
+        }
 
         RouteOptimizationResult result = new RouteOptimizationResult();
         result.setShipment(shipment);
@@ -33,7 +39,8 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
         result.setEstimatedTime(2.5);
         result.setGeneratedAt(LocalDateTime.now());
 
-        return resultRepository.save(result);
+        resultRepository.save(result);
+        return true;
     }
 
     @Override

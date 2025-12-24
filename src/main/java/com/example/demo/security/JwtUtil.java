@@ -10,12 +10,13 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "THIS_IS_A_DEMO_SECRET_KEY_FOR_TESTING_PURPOSES_ONLY";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private static final String SECRET = "THIS_IS_A_SECRET_KEY_FOR_JWT_DEMO_1234567890";
+    private static final long EXPIRATION = 1000 * 60 * 5;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key key;
 
     public JwtUtil() {
+        this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
     public String generateToken(String email, Long userId) {
@@ -28,24 +29,24 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
     }
 
-    public String getUsernameFromToken(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            extractAllClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
