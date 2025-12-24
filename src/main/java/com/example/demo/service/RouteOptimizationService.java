@@ -4,7 +4,7 @@ import com.example.demo.entity.RouteOptimizationResult;
 
 public interface RouteOptimizationService {
 
-    RouteOptimizationResult optimizeRoute(Long shipmentId);
+    boolean optimizeRoute(Long shipmentId);   // must return boolean
 
     RouteOptimizationResult getResult(Long shipmentId);
 }
