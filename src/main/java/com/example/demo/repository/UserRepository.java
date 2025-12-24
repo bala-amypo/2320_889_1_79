@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
-import java.util.*;
+import com.example.demo.entity.User;   // ✅ REQUIRED
+import java.util.Optional;
 
 public interface UserRepository {
     User save(User u);
