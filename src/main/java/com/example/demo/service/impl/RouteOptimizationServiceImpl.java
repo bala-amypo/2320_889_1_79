@@ -1,24 +1,15 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.entity.*;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
-import com.example.demo.service.RouteOptimizationService;
-import java.time.LocalDateTime;
-
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
-    private final ShipmentRepository shipmentRepo;
+    private final ShipmentRepository repo;
     private final RouteOptimizationResultRepository resultRepo;
 
-    public RouteOptimizationServiceImpl(ShipmentRepository s, RouteOptimizationResultRepository r) {
-        this.shipmentRepo = s;
-        this.resultRepo = r;
+    public RouteOptimizationServiceImpl(ShipmentRepository r, RouteOptimizationResultRepository rr) {
+        this.repo = r;
+        this.resultRepo = rr;
     }
 
-    @Override
     public RouteOptimizationResult optimizeRoute(Long shipmentId) {
-        Shipment s = shipmentRepo.findById(shipmentId)
+        Shipment s = repo.findById(shipmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
 
         double dist = Math.hypot(
@@ -36,7 +27,6 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
         return resultRepo.save(r);
     }
 
-    @Override
     public RouteOptimizationResult getResult(Long id) {
         return resultRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
