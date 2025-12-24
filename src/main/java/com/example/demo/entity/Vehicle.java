@@ -1,13 +1,24 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
 @Entity
-@Getter @Setter @Builder
-@NoArgsConstructor @AllArgsConstructor
+@Table(name = "vehicles", uniqueConstraints = {@UniqueConstraint(columnNames = "vehicleNumber")})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Vehicle {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String vehicleNumber;
-    private Double capacityKg;
-    private Double fuelEfficiency;
 
     @ManyToOne
     private User user;
+
+    private String vehicleNumber;
+    private Double capacityKg;
+    private Double fuelEfficiency;
 }
