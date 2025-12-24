@@ -1,14 +1,14 @@
-package com.example.demo.entity;
-
-import lombok.*;
-import java.time.LocalDateTime;
-
+@Entity
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class RouteOptimizationResult {
+    @Id @GeneratedValue
     private Long id;
+
+    @OneToOne
     private Shipment shipment;
-    private double optimizedDistanceKm;
-    private double estimatedFuelUsageL;
+
+    private Double optimizedDistanceKm;
+    private Double estimatedFuelUsageL;
     private LocalDateTime generatedAt;
 }

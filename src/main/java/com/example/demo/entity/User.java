@@ -1,65 +1,11 @@
-package com.example.demo.entity;
-
-import jakarta.persistence.*;
-
 @Entity
-@Table(name = "users")
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
-
-    @Column(nullable = false)
+    private String name;
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false)
     private String role;
-
-    // Constructors
-    public User() {}
-
-    public User(String email, String password, String role) {
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    // 🔥 REQUIRED BY TEST CASES
-    public String getRole() {
-        return role;
-    }
-
-    // 🔥 REQUIRED BY TEST CASES
-    public void setRole(String role) {
-        this.role = role;
-    }
 }
