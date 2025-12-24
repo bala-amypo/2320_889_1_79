@@ -30,3 +30,4 @@ public class AuthController {
         return "Login successful for role: " + user.getRole();
     }
 }
+mvn spring-boot:run -X
