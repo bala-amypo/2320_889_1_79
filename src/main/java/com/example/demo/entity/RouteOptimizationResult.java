@@ -2,30 +2,28 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "route_optimization_results")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "route_results")
 public class RouteOptimizationResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Shipment shipment;
+    private double totalDistance;
 
-    private Double optimizedDistanceKm;
-    private Double estimatedFuelUsageL;
+    private double estimatedTime;
 
     private LocalDateTime generatedAt;
 
-    @PrePersist
-    public void prePersist() {
-        generatedAt = LocalDateTime.now();
-    }
+    @OneToOne
+    private Shipment shipment;
 }
