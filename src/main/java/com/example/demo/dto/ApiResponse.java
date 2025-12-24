@@ -1,19 +1,16 @@
 package com.example.demo.dto;
 
+import lombok.Data;
+
+@Data
 public class ApiResponse {
+    private boolean success;
     private String message;
     private Object data;
-    
-    public ApiResponse() {}
-    
-    public ApiResponse(String message, Object data) {
+
+    public ApiResponse(boolean success, String message, Object data) {
+        this.success = success;
         this.message = message;
         this.data = data;
     }
-    
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    
-    public Object getData() { return data; }
-    public void setData(Object data) { this.data = data; }
 }
