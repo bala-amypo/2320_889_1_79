@@ -1,85 +1,60 @@
-package com.example.demo.service.impl;
+package com.example.demo.entity;
 
-import com.example.demo.entity.Location;
-import com.example.demo.entity.RouteOptimizationResult;
-import com.example.demo.entity.Shipment;
-import com.example.demo.repository.RouteOptimizationResultRepository;
-import com.example.demo.repository.ShipmentRepository;
-import com.example.demo.service.RouteOptimizationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-@Service
-public class RouteOptimizationServiceImpl implements RouteOptimizationService {
+@Entity
+@Table(name = "route_results")
+public class RouteOptimizationResult {
 
-    private final ShipmentRepository shipmentRepository;
-    private final RouteOptimizationResultRepository resultRepository;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Autowired
-    public RouteOptimizationServiceImpl(ShipmentRepository shipmentRepository,
-                                        RouteOptimizationResultRepository resultRepository) {
-        this.shipmentRepository = shipmentRepository;
-        this.resultRepository = resultRepository;
+    private Long shipmentId;
+    private double totalDistance;
+    private double estimatedTime;
+
+    private LocalDateTime generatedAt;
+
+    public RouteOptimizationResult() {}
+
+    public RouteOptimizationResult(Long shipmentId, double totalDistance, double estimatedTime) {
+        this.shipmentId = shipmentId;
+        this.totalDistance = totalDistance;
+        this.estimatedTime = estimatedTime;
+        this.generatedAt = LocalDateTime.now();
     }
 
-    @Override
-    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
-
-        Optional<Shipment> shipmentOpt = shipmentRepository.findById(shipmentId);
-        if (shipmentOpt.isEmpty()) {
-            return null;
-        }
-
-        Shipment shipment = shipmentOpt.get();
-
-        Location pickup = shipment.getPickupLocation();
-        Location drop = shipment.getDropLocation();
-
-        if (pickup == null || drop == null) {
-            return null;
-        }
-
-        double distance = calculateDistance(
-                pickup.getLatitude(), pickup.getLongitude(),
-                drop.getLatitude(), drop.getLongitude()
-        );
-
-        double estimatedTime = distance / 40.0; // assume avg 40km/h
-
-        RouteOptimizationResult result = new RouteOptimizationResult();
-        result.setShipment(shipment);
-        result.setTotalDistance(distance);
-        result.setEstimatedTime(estimatedTime);
-        result.setGeneratedAt(LocalDateTime.now());
-
-        resultRepository.save(result);
-        return result;
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public RouteOptimizationResult getResult(Long shipmentId) {
-        return resultRepository.findByShipmentId(shipmentId).orElse(null);
+    public Long getShipmentId() {
+        return shipmentId;
     }
 
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371.0;
+    public double getTotalDistance() {
+        return totalDistance;
+    }
 
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
+    public void setTotalDistance(double totalDistance) {
+        this.totalDistance = totalDistance;
+    }
 
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
+    public double getEstimatedTime() {
+        return estimatedTime;
+    }
 
-        double a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                        + Math.cos(lat1) * Math.cos(lat2)
-                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    public void setEstimatedTime(double estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    public LocalDateTime getGeneratedAt() {
+        return generatedAt;
+    }
 
-        return R * c;
+    public void setGeneratedAt(LocalDateTime generatedAt) {
+        this.generatedAt = generatedAt;
     }
 }
