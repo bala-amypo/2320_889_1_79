@@ -1,50 +1,67 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+    private final Key key;
+    private final int expirationMinutes;
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // ===== Test expects this constructor =====
+    public JwtUtil(String secret, int expirationMinutes) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMinutes = expirationMinutes;
+    }
 
-    // Generate Token
-    public String generateToken(String username) {
+    // ===== Test also creates default constructor =====
+    public JwtUtil() {
+        this.key = Keys.hmacShaKeyFor("defaultsecretdefaultsecretdefault12".getBytes());
+        this.expirationMinutes = 60;
+    }
+
+    // ===== Test expects THIS method signature =====
+    public String generateToken(long userId, String email, String role) {
+
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(key)
+                .claim("userId", userId)
+                .claim("email", email)
+                .claim("role", role)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + (expirationMinutes * 60 * 1000L)))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Validate Token
-    public boolean validateToken(String token) {
+    // ===== Test expects validateToken().isPresent() =====
+    public Optional<Claims> validateToken(String token) {
         try {
-            parseToken(token);
-            return true;
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return Optional.of(claims);
         } catch (Exception e) {
-            return false;
+            return Optional.empty();
         }
     }
 
-    // Extract Username
-    public String extractUsername(String token) {
-        return parseToken(token).getBody().getSubject();
+    // Helper claim extractors (used in tests)
+    public Optional<String> getEmail(String token) {
+        return validateToken(token).map(c -> c.get("email", String.class));
     }
 
-    // Parse token
-    private Jws<Claims> parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
+    public Optional<String> getRole(String token) {
+        return validateToken(token).map(c -> c.get("role", String.class));
+    }
+
+    public Optional<Long> getUserId(String token) {
+        return validateToken(token).map(c -> c.get("userId", Long.class));
     }
 }
