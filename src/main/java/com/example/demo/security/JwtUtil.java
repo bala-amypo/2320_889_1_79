@@ -1,65 +1,68 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "this_is_a_very_long_secret_key_for_testing_purposes_12345";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private String secret = "my-secret-key";
+    private long expirationMinutes = 60;
 
-    // 2 minutes expiry (tests depend on this)
-    private final long EXPIRATION = 1000 * 60 * 2;
+    public JwtUtil() {
+    }
 
-    public String generateToken(String email, Long userId, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("userId", userId);
+    // This constructor is used in tests
+    public JwtUtil(String secret, int expirationMinutes) {
+        this.secret = secret;
+        this.expirationMinutes = expirationMinutes;
+    }
+
+    public String generateToken(String email, Long userId) {
+        long now = System.currentTimeMillis();
+        Date issued = new Date(now);
+        Date expiry = new Date(now + expirationMinutes * 60 * 1000);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .claim("email", email)
+                .claim("userId", userId)
+                .setIssuedAt(issued)
+                .setExpiration(expiry)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public Long extractUserId(String token) {
-        return getClaims(token).get("userId", Long.class);
-    }
-
-    public String extractRole(String token) {
-        return getClaims(token).get("role", String.class);
-    }
-
-    public boolean isTokenValid(String token) {
+    public boolean validateToken(String token) {
         try {
-            getClaims(token);
-            return true;
-        } catch (ExpiredJwtException e) {
-            return false;
+            Claims claims = getAllClaims(token);
+            return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             return false;
         }
     }
 
-    private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
+    public String extractEmail(String token) {
+        return getClaim(token, claims -> claims.get("email", String.class));
+    }
+
+    public Long extractUserId(String token) {
+        return getClaim(token, claims -> claims.get("userId", Long.class));
+    }
+
+    private Claims getAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private <T> T getClaim(String token, Function<Claims, T> resolver) {
+        Claims claims = getAllClaims(token);
+        return resolver.apply(claims);
     }
 }
