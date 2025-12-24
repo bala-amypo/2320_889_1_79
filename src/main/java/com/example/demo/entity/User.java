@@ -2,10 +2,8 @@ package com.example.demo.entity;
 
 import lombok.*;
 
-@Getter @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class User {
     private Long id;
     private String name;
