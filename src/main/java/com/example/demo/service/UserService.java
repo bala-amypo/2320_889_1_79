@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.User;
+import java.util.List;
 
 public interface UserService {
-    User register(User user);
-    User findByEmail(String email);
-    User findById(Long id);
+    User createUser(User user);
+    User getUserById(Long id);
+    User getByEmail(String email);
+    List<User> getAllUsers();
 }

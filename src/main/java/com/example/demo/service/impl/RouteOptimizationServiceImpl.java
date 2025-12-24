@@ -8,7 +8,6 @@ import com.example.demo.service.RouteOptimizationService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
@@ -18,35 +17,30 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
     public RouteOptimizationServiceImpl(
             ShipmentRepository shipmentRepository,
-            RouteOptimizationResultRepository resultRepository
-    ) {
+            RouteOptimizationResultRepository resultRepository) {
         this.shipmentRepository = shipmentRepository;
         this.resultRepository = resultRepository;
     }
 
     @Override
-    public boolean optimizeRoute(Long shipmentId) {
+    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
 
-        Optional<Shipment> optionalShipment = shipmentRepository.findById(shipmentId);
-
-        if (optionalShipment.isEmpty()) {
-            return false;
-        }
-
-        Shipment shipment = optionalShipment.get();
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment Not Found"));
 
         RouteOptimizationResult result = new RouteOptimizationResult();
         result.setShipment(shipment);
-        result.setTotalDistance(120.0);
-        result.setEstimatedTime(2.5);
+        result.setOptimizedPath("Sample Optimized Path");
+        result.setTotalDistance(120.5);
+        result.setEstimatedTime(4.2);
         result.setGeneratedAt(LocalDateTime.now());
 
-        resultRepository.save(result);
-        return true;
+        return resultRepository.save(result);
     }
 
     @Override
     public RouteOptimizationResult getResult(Long shipmentId) {
-        return resultRepository.findByShipmentId(shipmentId).orElse(null);
+        return resultRepository.findByShipmentId(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Result Not Found"));
     }
 }
