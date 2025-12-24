@@ -1,60 +1,44 @@
-package com.example.demo.entity;
+package com.example.demo.service.impl;
 
-import jakarta.persistence.*;
+import com.example.demo.entity.RouteOptimizationResult;
+import com.example.demo.entity.Shipment;
+import com.example.demo.repository.RouteOptimizationResultRepository;
+import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.service.RouteOptimizationService;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "route_results")
-public class RouteOptimizationResult {
+@Service
+public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private final ShipmentRepository shipmentRepository;
+    private final RouteOptimizationResultRepository resultRepository;
 
-    private Long shipmentId;
-    private double totalDistance;
-    private double estimatedTime;
-
-    private LocalDateTime generatedAt;
-
-    public RouteOptimizationResult() {}
-
-    public RouteOptimizationResult(Long shipmentId, double totalDistance, double estimatedTime) {
-        this.shipmentId = shipmentId;
-        this.totalDistance = totalDistance;
-        this.estimatedTime = estimatedTime;
-        this.generatedAt = LocalDateTime.now();
+    public RouteOptimizationServiceImpl(ShipmentRepository shipmentRepository,
+                                        RouteOptimizationResultRepository resultRepository) {
+        this.shipmentRepository = shipmentRepository;
+        this.resultRepository = resultRepository;
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
+
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment Not Found"));
+
+        RouteOptimizationResult result = new RouteOptimizationResult();
+        result.setShipment(shipment);
+        result.setTotalDistance(120.0);
+        result.setEstimatedTime(2.5);
+        result.setGeneratedAt(LocalDateTime.now());
+
+        return resultRepository.save(result);
     }
 
-    public Long getShipmentId() {
-        return shipmentId;
-    }
-
-    public double getTotalDistance() {
-        return totalDistance;
-    }
-
-    public void setTotalDistance(double totalDistance) {
-        this.totalDistance = totalDistance;
-    }
-
-    public double getEstimatedTime() {
-        return estimatedTime;
-    }
-
-    public void setEstimatedTime(double estimatedTime) {
-        this.estimatedTime = estimatedTime;
-    }
-
-    public LocalDateTime getGeneratedAt() {
-        return generatedAt;
-    }
-
-    public void setGeneratedAt(LocalDateTime generatedAt) {
-        this.generatedAt = generatedAt;
+    @Override
+    public RouteOptimizationResult getResult(Long shipmentId) {
+        return resultRepository.findByShipmentId(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Result Not Found"));
     }
 }
