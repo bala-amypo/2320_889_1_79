@@ -16,7 +16,10 @@ public class RouteOptimizationResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TEST EXPECTS THESE FIELDS
+    // TEST EXPECTS THESE FIELDS + GETTERS
+    private double optimizedDistanceKm;
+    private double estimatedFuelUsageL;
+
     private double totalDistance;
     private double estimatedTime;
 
