@@ -1,26 +1,15 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "users")
-@Getter
-@Setter
+@Getter @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String username;
-
+    private String name;
     private String email;
-
     private String password;
-
-    private String role;   // REQUIRED for Spring Security
+    private String role;
 }
