@@ -1,4 +1,5 @@
 package com.example.demo.service.impl;
+import java.util.Optional;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
@@ -49,4 +50,15 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+    @Override
+public User register(User user) {
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    return userRepository.save(user);
+}
+
+@Override
+public Optional<User> findByEmail(String email) {
+    return userRepository.findByEmail(email);
+}
+
 }
