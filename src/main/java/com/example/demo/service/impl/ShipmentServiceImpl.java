@@ -1,3 +1,14 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.Location;
+import com.example.demo.entity.Shipment;
+import com.example.demo.entity.Vehicle;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.LocationRepository;
+import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.repository.VehicleRepository;
+import com.example.demo.service.ShipmentService;
+
 public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepo;
@@ -12,19 +23,20 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public Shipment createShipment(Long vehicleId, Shipment s) {
-        var vehicle = vehicleRepo.findById(vehicleId)
+
+        Vehicle vehicle = vehicleRepo.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
         if (s.getWeightKg() > vehicle.getCapacityKg())
-            throw new IllegalArgumentException("exceeds capacity");
+            throw new IllegalArgumentException("exceeds");
 
         if (s.getScheduledDate().isBefore(java.time.LocalDate.now()))
-            throw new IllegalArgumentException("past date");
+            throw new IllegalArgumentException("past");
 
-        var pickup = locationRepo.findById(s.getPickupLocation().getId())
+        Location pickup = locationRepo.findById(s.getPickupLocation().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found"));
 
-        var drop = locationRepo.findById(s.getDropLocation().getId())
+        Location drop = locationRepo.findById(s.getDropLocation().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found"));
 
         s.setVehicle(vehicle);

@@ -1,3 +1,12 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.RouteOptimizationResult;
+import com.example.demo.entity.Shipment;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.RouteOptimizationResultRepository;
+import com.example.demo.repository.ShipmentRepository;
+import com.example.demo.service.RouteOptimizationService;
+
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
     private final ShipmentRepository shipmentRepo;
@@ -10,7 +19,8 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
     @Override
     public RouteOptimizationResult optimizeRoute(Long shipmentId) {
-        var shipment = shipmentRepo.findById(shipmentId)
+
+        Shipment shipment = shipmentRepo.findById(shipmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
 
         double dist = Math.hypot(
