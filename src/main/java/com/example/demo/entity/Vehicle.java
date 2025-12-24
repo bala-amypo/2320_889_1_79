@@ -19,6 +19,9 @@ public class Vehicle {
 
     private double capacityKg;
 
+    // NEW FIELD REQUIRED BY TESTS
+    private double fuelEfficiency;   // km per litre or similar
+
     @ManyToOne
     private User user;
 }
