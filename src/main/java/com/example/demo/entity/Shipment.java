@@ -1,13 +1,10 @@
 package com.example.demo.entity;
 
 import lombok.*;
-
 import java.time.LocalDate;
 
-@Getter @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class Shipment {
     private Long id;
     private Vehicle vehicle;

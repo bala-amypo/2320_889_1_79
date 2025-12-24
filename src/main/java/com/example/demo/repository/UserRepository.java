@@ -1,6 +1,5 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.User;
 import java.util.*;
 
 public interface UserRepository {
