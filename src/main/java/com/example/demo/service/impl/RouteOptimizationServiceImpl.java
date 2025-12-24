@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
+import com.example.demo.entity.RouteOptimizationResult;
+import com.example.demo.entity.Shipment;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.RouteOptimizationResultRepository;
 import com.example.demo.repository.ShipmentRepository;
@@ -15,40 +16,33 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     private final ShipmentRepository shipmentRepository;
     private final RouteOptimizationResultRepository resultRepository;
 
-    public RouteOptimizationServiceImpl(
-            ShipmentRepository shipmentRepository,
-            RouteOptimizationResultRepository resultRepository
-    ) {
+    public RouteOptimizationServiceImpl(ShipmentRepository shipmentRepository,
+                                        RouteOptimizationResultRepository resultRepository) {
         this.shipmentRepository = shipmentRepository;
         this.resultRepository = resultRepository;
     }
 
     @Override
     public RouteOptimizationResult optimizeRoute(Long shipmentId) {
-
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
 
-        Location pickup = shipment.getPickupLocation();
-        Location drop = shipment.getDropLocation();
+        double lat1 = shipment.getPickupLocation().getLatitude();
+        double lon1 = shipment.getPickupLocation().getLongitude();
+        double lat2 = shipment.getDropLocation().getLatitude();
+        double lon2 = shipment.getDropLocation().getLongitude();
 
-        double distance = Math.hypot(
-                pickup.getLatitude() - drop.getLatitude(),
-                pickup.getLongitude() - drop.getLongitude()
-        );
-
-        if (distance <= 0) {
-            distance = 1.0;
-        }
+        double distance = Math.hypot(lat2 - lat1, lon2 - lon1) * 111; // approximate km
+        if (distance == 0) distance = 10.0; // ensure non-zero
 
         double fuelUsage = distance / shipment.getVehicle().getFuelEfficiency();
 
-        RouteOptimizationResult result = new RouteOptimizationResult(
-                shipment,
-                distance,
-                fuelUsage,
-                LocalDateTime.now()
-        );
+        RouteOptimizationResult result = RouteOptimizationResult.builder()
+                .shipment(shipment)
+                .optimizedDistanceKm(distance)
+                .estimatedFuelUsageL(fuelUsage)
+                .generatedAt(LocalDateTime.now())
+                .build();
 
         return resultRepository.save(result);
     }
