@@ -10,17 +10,23 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "THIS_IS_A_DEMO_SECRET_FOR_TESTING_ONLY_123456";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private String SECRET = "THIS_IS_A_DEMO_SECRET_FOR_TESTING_ONLY_123456";
+    private long EXPIRATION = 1000 * 60 * 60; // 1 hour default
+
+    public JwtUtil() {
+    }
+
+    // REQUIRED BY TESTS
+    public JwtUtil(String secret, int expiryMinutes) {
+        this.SECRET = secret;
+        this.EXPIRATION = expiryMinutes * 60_000L;
+    }
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public JwtUtil() {
-    }
-
-    // ******** REQUIRED BY TESTS ********
+    // REQUIRED SIGNATURE IN TESTS
     public String generateToken(long userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -32,7 +38,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Optional second version (other parts of project use it)
+    // Used by application flow
     public String generateToken(String email, Long userId) {
         return Jwts.builder()
                 .setSubject(email)
@@ -43,38 +49,25 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ******** MUST RETURN Boolean NOT boolean ********
-    public Boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
-            return Boolean.TRUE;
-        } catch (Exception e) {
-            return Boolean.FALSE;
-        }
+    // MUST RETURN Jws<Claims> because tests call getBody()
+    public Jws<Claims> validateToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
     }
 
     public String extractEmail(String token) {
-        return getClaims(token).getSubject();
+        return validateToken(token).getBody().getSubject();
     }
 
     public Long extractUserId(String token) {
-        Object id = getClaims(token).get("userId");
+        Object id = validateToken(token).getBody().get("userId");
         return id == null ? null : Long.valueOf(id.toString());
     }
 
     public String extractRole(String token) {
-        Object role = getClaims(token).get("role");
+        Object role = validateToken(token).getBody().get("role");
         return role == null ? null : role.toString();
-    }
-
-    private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 }
