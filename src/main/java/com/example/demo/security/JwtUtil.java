@@ -1,32 +1,50 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
 
-    private final String secret;
-    private final long expirationMs;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
-    public JwtUtil(String secret, long exp) {
-        this.secret = secret;
-        this.expirationMs = exp;
-    }
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public String generateToken(Long userId, String email, String role) {
+    // Generate Token
+    public String generateToken(String username) {
         return Jwts.builder()
-                .claim("userId", userId)
-                .claim("email", email)
-                .claim("role", role)
+                .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key)
                 .compact();
     }
 
-    public Jws<Claims> validateToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+    // Validate Token
+    public boolean validateToken(String token) {
+        try {
+            parseToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Extract Username
+    public String extractUsername(String token) {
+        return parseToken(token).getBody().getSubject();
+    }
+
+    // Parse token
+    private Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token);
     }
 }
