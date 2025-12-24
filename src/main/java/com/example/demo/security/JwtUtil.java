@@ -10,14 +10,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET =
-            "THIS_IS_SUPER_SECRET_KEY_FOR_TESTING_PURPOSE_123456";
-    private static final long EXPIRATION = 1000 * 60 * 5; // 5 mins
+    private static final String SECRET = "mysecretkeymysecretkeymysecretkey123";
+    private static final long EXPIRATION = 1000 * 60; // 1 minute
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key key;
+
+    public JwtUtil() {
+        this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    }
 
     public String generateToken(String email, Long userId) {
-
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
@@ -28,14 +30,28 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Jws<Claims> validateToken(String token) {
+    public Jws<Claims> getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
     }
 
-    public String getEmail(String token) {
-        return validateToken(token).getBody().getSubject();
+    public boolean validateToken(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String extractEmail(String token) {
+        return getClaims(token).getBody().getSubject();
+    }
+
+    public Long extractUserId(String token) {
+        Object value = getClaims(token).getBody().get("userId");
+        return value == null ? null : Long.parseLong(value.toString());
     }
 }
