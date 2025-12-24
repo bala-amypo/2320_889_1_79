@@ -22,7 +22,7 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     }
 
     @Override
-    public boolean optimizeRoute(Long shipmentId) {
+    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
 
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new RuntimeException("Shipment Not Found"));
@@ -33,8 +33,7 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
         result.setEstimatedTime(2.5);
         result.setGeneratedAt(LocalDateTime.now());
 
-        resultRepository.save(result);
-        return true;
+        return resultRepository.save(result);
     }
 
     @Override
