@@ -1,32 +1,35 @@
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
-    private final ShipmentRepository repo;
+    private final ShipmentRepository shipmentRepo;
     private final RouteOptimizationResultRepository resultRepo;
 
-    public RouteOptimizationServiceImpl(ShipmentRepository r, RouteOptimizationResultRepository rr) {
-        this.repo = r;
-        this.resultRepo = rr;
+    public RouteOptimizationServiceImpl(ShipmentRepository s, RouteOptimizationResultRepository r) {
+        this.shipmentRepo = s;
+        this.resultRepo = r;
     }
 
+    @Override
     public RouteOptimizationResult optimizeRoute(Long shipmentId) {
-        Shipment s = repo.findById(shipmentId)
+        var shipment = shipmentRepo.findById(shipmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
 
         double dist = Math.hypot(
-                s.getPickupLocation().getLatitude() - s.getDropLocation().getLatitude(),
-                s.getPickupLocation().getLongitude() - s.getDropLocation().getLongitude()
+                shipment.getPickupLocation().getLatitude() - shipment.getDropLocation().getLatitude(),
+                shipment.getPickupLocation().getLongitude() - shipment.getDropLocation().getLongitude()
         );
 
+        double fuel = dist / shipment.getVehicle().getFuelEfficiency();
+
         RouteOptimizationResult r = RouteOptimizationResult.builder()
-                .shipment(s)
+                .shipment(shipment)
                 .optimizedDistanceKm(dist)
-                .estimatedFuelUsageL(dist / s.getVehicle().getFuelEfficiency())
-                .generatedAt(LocalDateTime.now())
+                .estimatedFuelUsageL(fuel)
                 .build();
 
         return resultRepo.save(r);
     }
 
+    @Override
     public RouteOptimizationResult getResult(Long id) {
         return resultRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found"));

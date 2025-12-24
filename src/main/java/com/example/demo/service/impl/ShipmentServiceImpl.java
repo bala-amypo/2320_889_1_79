@@ -1,35 +1,42 @@
 public class ShipmentServiceImpl implements ShipmentService {
 
-    private final ShipmentRepository repo;
+    private final ShipmentRepository shipmentRepo;
     private final VehicleRepository vehicleRepo;
     private final LocationRepository locationRepo;
 
-    public ShipmentServiceImpl(ShipmentRepository r, VehicleRepository v, LocationRepository l) {
-        this.repo = r;
+    public ShipmentServiceImpl(ShipmentRepository s, VehicleRepository v, LocationRepository l) {
+        this.shipmentRepo = s;
         this.vehicleRepo = v;
         this.locationRepo = l;
     }
 
+    @Override
     public Shipment createShipment(Long vehicleId, Shipment s) {
-
-        if (s.getScheduledDate().isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("Past date");
-
-        Vehicle v = vehicleRepo.findById(vehicleId)
+        var vehicle = vehicleRepo.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
-        if (s.getWeightKg() > v.getCapacityKg())
-            throw new IllegalArgumentException("Exceeds capacity");
+        if (s.getWeightKg() > vehicle.getCapacityKg())
+            throw new IllegalArgumentException("exceeds capacity");
 
-        s.setVehicle(v);
-        s.setPickupLocation(locationRepo.findById(s.getPickupLocation().getId()).orElseThrow());
-        s.setDropLocation(locationRepo.findById(s.getDropLocation().getId()).orElseThrow());
+        if (s.getScheduledDate().isBefore(java.time.LocalDate.now()))
+            throw new IllegalArgumentException("past date");
 
-        return repo.save(s);
+        var pickup = locationRepo.findById(s.getPickupLocation().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found"));
+
+        var drop = locationRepo.findById(s.getDropLocation().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found"));
+
+        s.setVehicle(vehicle);
+        s.setPickupLocation(pickup);
+        s.setDropLocation(drop);
+
+        return shipmentRepo.save(s);
     }
 
+    @Override
     public Shipment getShipment(Long id) {
-        return repo.findById(id)
+        return shipmentRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
     }
 }

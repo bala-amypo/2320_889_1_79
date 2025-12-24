@@ -1,29 +1,33 @@
 public class VehicleServiceImpl implements VehicleService {
 
-    private final VehicleRepository repo;
+    private final VehicleRepository vehicleRepo;
     private final UserRepository userRepo;
 
-    public VehicleServiceImpl(VehicleRepository r, UserRepository u) {
-        this.repo = r;
+    public VehicleServiceImpl(VehicleRepository v, UserRepository u) {
+        this.vehicleRepo = v;
         this.userRepo = u;
     }
 
-    public Vehicle addVehicle(Long userId, Vehicle v) {
-        if (v.getCapacityKg() <= 0)
-            throw new IllegalArgumentException("Capacity invalid");
-
-        User u = userRepo.findById(userId)
+    @Override
+    public Vehicle addVehicle(Long userId, Vehicle vehicle) {
+        var user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        v.setUser(u);
-        return repo.save(v);
+
+        if (vehicle.getCapacityKg() <= 0)
+            throw new IllegalArgumentException("Capacity must be positive");
+
+        vehicle.setUser(user);
+        return vehicleRepo.save(vehicle);
     }
 
+    @Override
+    public List<Vehicle> getVehiclesByUser(Long userId) {
+        return vehicleRepo.findByUserId(userId);
+    }
+
+    @Override
     public Vehicle findById(Long id) {
-        return repo.findById(id)
+        return vehicleRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
-    }
-
-    public List<Vehicle> getVehiclesByUser(Long id) {
-        return repo.findByUserId(id);
     }
 }
