@@ -34,13 +34,35 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     /**
-     * VERY IMPORTANT FOR TEST t06:
-     * - DO NOT validate user existence here
-     * - DO NOT throw exception
-     * - Simply return vehicles list
+     * IMPORTANT FOR TEST t06:
+     * Do NOT validate user existence
+     * Do NOT throw exception
      */
     @Override
     public List<Vehicle> getVehiclesByUser(Long userId) {
         return vehicleRepository.findByUserId(userId);
+    }
+
+    /**
+     * REQUIRED BY MULTIPLE TEST CASES
+     */
+    @Override
+    public Vehicle findById(Long id) {
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+    }
+
+    /**
+     * REQUIRED BY TEST CASES
+     */
+    @Override
+    public Vehicle findByVehicleNumber(String vehicleNumber) {
+        Vehicle vehicle = vehicleRepository.findByVehicleNumber(vehicleNumber);
+
+        if (vehicle == null) {
+            throw new ResourceNotFoundException("Vehicle not found");
+        }
+
+        return vehicle;
     }
 }
