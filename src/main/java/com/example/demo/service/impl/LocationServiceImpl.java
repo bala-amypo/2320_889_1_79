@@ -10,20 +10,24 @@ import java.util.List;
 @Service
 public class LocationServiceImpl implements LocationService {
 
-    private final LocationRepository repo;
+    private final LocationRepository locationRepository;
 
-    public LocationServiceImpl(LocationRepository repo){
-        this.repo = repo;
+    public LocationServiceImpl(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
     }
 
-    public Location create(Location l){
-        if(l.getLatitude() < -90 || l.getLatitude() > 90)
-            throw new IllegalArgumentException("Invalid latitude");
-
-        return repo.save(l);
+    @Override
+    public Location createLocation(Location location) {
+        return locationRepository.save(location);
     }
 
-    public List<Location> getAll(){
-        return repo.findAll();
+    @Override
+    public List<Location> getAllLocations() {
+        return locationRepository.findAll();
+    }
+
+    @Override
+    public Location getLocationById(Long id) {
+        return locationRepository.findById(id).orElse(null);
     }
 }
