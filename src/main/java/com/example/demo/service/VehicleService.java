@@ -13,4 +13,8 @@ public interface VehicleService {
 
     Optional<Vehicle> findById(long id);
 
+    // Required by Controller
+    Vehicle addVehicle(Long userId, Vehicle vehicle);
+
+    List<Vehicle> getVehiclesByUser(Long userId);
 }
