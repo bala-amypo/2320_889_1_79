@@ -1,45 +1,35 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
-
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
 import java.util.Date;
 
-@Component
 public class JwtUtil {
 
-    private String secret = "secret_key_test";
-    private long expiration = 3600000;
+    private final Key key;
+    private final long validity;
 
-    public JwtUtil() {
+    public JwtUtil(String secret,long validity){
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.validity = validity;
     }
 
-    public JwtUtil(String secret, int expiration) {
-        this.secret = secret;
-        this.expiration = expiration;
-    }
-
-    public String generateToken(String username) {
+    public String generateToken(Long userId,String email,String role){
         return Jwts.builder()
-                .setSubject(username)
+                .claim("userId",userId)
+                .claim("email",email)
+                .claim("role",role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis()+validity))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // TEST EXPECTS THIS METHOD
-    public String generateToken(long id, String email, String role) {
-        return generateToken(email);
-    }
-
-    public boolean validateToken(String token) {
-        return true;
-    }
-
-    public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(secret)
-                .parseClaimsJws(token).getBody().getSubject();
+    public Jws<Claims> validateToken(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
     }
 }
