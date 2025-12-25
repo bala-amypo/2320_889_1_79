@@ -1,24 +1,24 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+
+import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String vehicleNumber;
+    private double fuelEfficiency;
 
-    private double capacityKg;
-
-    @ManyToOne
-    private User user;
+    public double getFuelEfficiency() {
+        return fuelEfficiency;
+    }
 }
