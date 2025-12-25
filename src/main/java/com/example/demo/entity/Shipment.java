@@ -36,3 +36,30 @@ public class Shipment {
     public LocalDate getScheduledDate(){ return scheduledDate;}
     public void setScheduledDate(LocalDate d){ this.scheduledDate=d;}
 }
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Shipment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    private Vehicle vehicle;
+
+    @ManyToOne
+    private Location source;
+
+    @ManyToOne
+    private Location destination;
+
+    private double weight;
+}
