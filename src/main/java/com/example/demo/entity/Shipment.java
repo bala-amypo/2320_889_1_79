@@ -1,31 +1,31 @@
 package com.example.demo.entity;
 
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter
-@Builder
+@Table(name="shipments")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Shipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double weightKg;
+    @ManyToOne(optional=false)
+    private Vehicle vehicle;
 
-    private LocalDate scheduledDate;
-
-    @ManyToOne
+    @ManyToOne(optional=false)
     private Location pickupLocation;
 
-    @ManyToOne
+    @ManyToOne(optional=false)
     private Location dropLocation;
 
-    @ManyToOne
-    private Vehicle vehicle;
+    private Double weightKg;
+
+    private LocalDate scheduledDate;
 }

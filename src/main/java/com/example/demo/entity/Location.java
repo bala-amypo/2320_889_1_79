@@ -1,14 +1,14 @@
 package com.example.demo.entity;
 
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
-@Builder
+@Table(name="locations")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Location {
 
     @Id
@@ -16,6 +16,6 @@ public class Location {
     private Long id;
 
     private String name;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 }
