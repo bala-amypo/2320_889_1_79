@@ -1,13 +1,13 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import javax.persistence.*;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Vehicle {
 
     @Id
@@ -15,10 +15,11 @@ public class Vehicle {
     private Long id;
 
     private String vehicleNumber;
-    private double capacityKg;
-    private String type;
+
+    private Double capacityKg;
+
+    private Double fuelEfficiency;   // <-- REQUIRED
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 }
