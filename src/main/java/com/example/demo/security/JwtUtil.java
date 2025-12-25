@@ -1,112 +1,74 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
+@Component
 public class JwtUtil {
 
-    private String SECRET_KEY = "default_secret_key";
-    private long EXPIRATION = 1000 * 60 * 60;
+    private final String SECRET_KEY = "mysecretkey123456";
+    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
-    // ================= CONSTRUCTORS =================
-
-    // Required by your tests
     public JwtUtil() {
     }
 
-    // Required by your tests (secret, expirySeconds)
-    public JwtUtil(String secret, int expirySeconds) {
-        this.SECRET_KEY = secret;
-        this.EXPIRATION = expirySeconds * 1000L;
-    }
-
     // ================= TOKEN GENERATION =================
-
-    // Used in main project
     public String generateToken(String username, Long userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         return createToken(claims, username);
     }
 
-    // Used by tests → (long userId, username, role)
-    public String generateToken(long userId, String username, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("role", role);
-        return createToken(claims, username);
-    }
-
     private String createToken(Map<String, Object> claims, String subject) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + EXPIRATION);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    // ================= EXTRACT =================
+    // ================= EXTRACTORS =================
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractAllClaims(token).getSubject();
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        return resolver.apply(extractAllClaims(token));
-    }
-
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    private boolean isExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private Boolean isExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     // ================= VALIDATION =================
 
-    // Tests expect Boolean validate
-    public Boolean validateToken(String token) {
+    // Used by APPLICATION (boolean)
+    public Boolean validateToken(String token, String username) {
         try {
-            return !isExpired(token);
+            String extractedUser = extractUsername(token);
+            return extractedUser.equals(username) && !isExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
-    // Tests expect validate().getBody()
-    public Jws<Claims> validateAndReturnClaims(String token) {
+    // Used by TESTS (they call validateToken(token).getBody())
+    public Jws<Claims> validateToken(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token);
-    }
-
-    // Tests call jwtUtil.validateToken(token).getBody()
-    // So we make a wrapper returning same as above
-    public Jws<Claims> validateTokenAndReturn(String token) {
-        return validateAndReturnClaims(token);
-    }
-
-    // Overload used earlier
-    public Boolean validateToken(String token, String username) {
-        try {
-            return extractUsername(token).equals(username) && !isExpired(token);
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
