@@ -1,9 +1,6 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
+import io.jsonwebtoken.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,23 +8,41 @@ import java.util.function.Function;
 
 public class JwtUtil {
 
-    private String SECRET_KEY = "secret_key_demo_project";
-    private long JWT_EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private String SECRET_KEY = "default_secret_key";
+    private long EXPIRATION = 1000 * 60 * 60;
 
+    // ================= CONSTRUCTORS =================
+
+    // Required by your tests
     public JwtUtil() {
-        // no-arg constructor required by tests
+    }
+
+    // Required by your tests (secret, expirySeconds)
+    public JwtUtil(String secret, int expirySeconds) {
+        this.SECRET_KEY = secret;
+        this.EXPIRATION = expirySeconds * 1000L;
     }
 
     // ================= TOKEN GENERATION =================
+
+    // Used in main project
     public String generateToken(String username, Long userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         return createToken(claims, username);
     }
 
+    // Used by tests → (long userId, username, role)
+    public String generateToken(long userId, String username, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("role", role);
+        return createToken(claims, username);
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + JWT_EXPIRATION);
+        Date expiry = new Date(now.getTime() + EXPIRATION);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -38,7 +53,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ================= EXTRACT DATA =================
+    // ================= EXTRACT =================
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -47,9 +62,8 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
+        return resolver.apply(extractAllClaims(token));
     }
 
     private Claims extractAllClaims(String token) {
@@ -59,23 +73,38 @@ public class JwtUtil {
                 .getBody();
     }
 
-    private boolean isTokenExpired(String token) {
+    private boolean isExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     // ================= VALIDATION =================
+
+    // Tests expect Boolean validate
     public Boolean validateToken(String token) {
         try {
-            return !isTokenExpired(token);
+            return !isExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
-    public Boolean validateToken(String token, String email) {
+    // Tests expect validate().getBody()
+    public Jws<Claims> validateAndReturnClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token);
+    }
+
+    // Tests call jwtUtil.validateToken(token).getBody()
+    // So we make a wrapper returning same as above
+    public Jws<Claims> validateTokenAndReturn(String token) {
+        return validateAndReturnClaims(token);
+    }
+
+    // Overload used earlier
+    public Boolean validateToken(String token, String username) {
         try {
-            final String username = extractUsername(token);
-            return username != null && username.equals(email) && !isTokenExpired(token);
+            return extractUsername(token).equals(username) && !isExpired(token);
         } catch (Exception e) {
             return false;
         }
