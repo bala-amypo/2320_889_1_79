@@ -5,9 +5,9 @@ import lombok.*;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Vehicle {
 
     @Id
@@ -16,8 +16,9 @@ public class Vehicle {
 
     private String vehicleNumber;
     private double capacityKg;
-    private double fuelEfficiency;
+    private String type;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }
