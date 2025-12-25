@@ -21,8 +21,8 @@ public class VehicleController {
         return service.addVehicle(userId, v);
     }
 
-    @GetMapping("/{userId}")
-    public List<Vehicle> list(@PathVariable Long userId){
+    @GetMapping("/user/{userId}")
+    public List<Vehicle> getByUser(@PathVariable Long userId){
         return service.getVehiclesByUser(userId);
     }
 }

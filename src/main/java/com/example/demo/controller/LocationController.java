@@ -2,30 +2,27 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Location;
 import com.example.demo.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/locations")
+@RequestMapping("/locations")
 public class LocationController {
 
-    @Autowired
-    private LocationService locationService;
+    private final LocationService service;
+
+    public LocationController(LocationService service){
+        this.service = service;
+    }
 
     @PostMapping
-    public Location create(@RequestBody Location location) {
-        return locationService.createLocation(location);
+    public Location create(@RequestBody Location l){
+        return service.createLocation(l);
     }
 
     @GetMapping
-    public List<Location> getAll() {
-        return locationService.getAllLocations();
-    }
-
-    @GetMapping("/{id}")
-    public Location getOne(@PathVariable Long id) {
-        return locationService.getLocationById(id);
+    public List<Location> getAll(){
+        return service.getAllLocations();
     }
 }

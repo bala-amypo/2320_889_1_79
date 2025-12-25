@@ -10,17 +10,17 @@ public class ShipmentController {
 
     private final ShipmentService service;
 
-    public ShipmentController(ShipmentService service) {
+    public ShipmentController(ShipmentService service){
         this.service = service;
     }
 
-    @PostMapping
-    public Shipment create(@RequestBody Shipment shipment) {
-        return service.create(shipment);
+    @PostMapping("/{vehicleId}")
+    public Shipment create(@PathVariable Long vehicleId, @RequestBody Shipment s){
+        return service.createShipment(vehicleId, s);
     }
 
-    @GetMapping("/{id}")
-    public Shipment get(@PathVariable Long id) {
-        return service.getShipment(id);
+    @GetMapping("/{shipmentId}")
+    public Shipment get(@PathVariable Long shipmentId){
+        return service.getShipment(shipmentId);
     }
 }
