@@ -28,4 +28,14 @@ public class ShipmentServiceImpl implements ShipmentService {
     public Shipment createShipment(long userId, Shipment shipment) {
         return shipmentRepo.save(shipment);
     }
+
+    @Override
+    public Shipment create(Shipment shipment) {
+        return shipmentRepo.save(shipment);
+    }
+
+    @Override
+    public Shipment getShipment(Long id) {
+        return shipmentRepo.findById(id).orElse(null);
+    }
 }
