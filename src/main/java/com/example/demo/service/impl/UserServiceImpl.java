@@ -15,17 +15,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(User user) {
+    public User registerUser(User user) {
         return repo.save(user);
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return repo.findByEmail(email).orElse(null);
-    }
-
-    @Override
-    public User findById(long id) {
-        return repo.findById(id).orElse(null);
     }
 }

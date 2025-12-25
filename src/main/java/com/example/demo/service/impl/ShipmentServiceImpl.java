@@ -8,14 +8,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
 
-    private final ShipmentRepository shipmentRepository;
+    private final ShipmentRepository repo;
 
     public ShipmentServiceImpl(ShipmentRepository repo) {
-        this.shipmentRepository = repo;
+        this.repo = repo;
     }
 
     @Override
-    public Shipment createShipment(long userId, Shipment shipment) {
-        return shipmentRepository.save(shipment);
+    public Shipment create(Shipment shipment) {
+        return repo.save(shipment);
+    }
+
+    @Override
+    public Shipment getShipment(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
     }
 }
