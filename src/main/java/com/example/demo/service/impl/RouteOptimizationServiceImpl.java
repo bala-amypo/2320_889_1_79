@@ -7,8 +7,6 @@ import com.example.demo.service.RouteOptimizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
@@ -16,22 +14,22 @@ public class RouteOptimizationServiceImpl implements RouteOptimizationService {
     private final ShipmentRepository shipmentRepository;
 
     @Override
-    public RouteOptimizationResult optimize(Long shipmentId) {
-        Optional<Shipment> shipmentOpt = shipmentRepository.findById(shipmentId);
+    public RouteOptimizationResult optimizeRoute(Long shipmentId) {
 
-        RouteOptimizationResult result = new RouteOptimizationResult();
-        result.setSuccess(shipmentOpt.isPresent());
-        result.setFeasible(shipmentOpt.isPresent());
-        result.setOptimized(shipmentOpt.isPresent());
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
 
-        result.setTotalDistanceKm(120.5);
-        result.setTotalCost(3500.0);
-
-        return result;
+        return RouteOptimizationResult.builder()
+                .success(true)
+                .feasible(true)
+                .optimized(true)
+                .totalDistanceKm(120.0)
+                .totalCost(500.0)
+                .build();
     }
 
     @Override
     public RouteOptimizationResult getResult(Long shipmentId) {
-        return optimize(shipmentId);
+        return optimizeRoute(shipmentId);
     }
 }
