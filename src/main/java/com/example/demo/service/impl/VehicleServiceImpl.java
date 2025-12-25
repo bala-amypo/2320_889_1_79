@@ -34,10 +34,10 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     /**
-     * IMPORTANT FOR TEST t06:
-     * DO NOT check if user exists
-     * DO NOT throw exception here
-     * Simply return vehicles list
+     * VERY IMPORTANT FOR TEST t06:
+     * - DO NOT validate user existence here
+     * - DO NOT throw exception
+     * - Simply return vehicles list
      */
     @Override
     public List<Vehicle> getVehiclesByUser(Long userId) {
