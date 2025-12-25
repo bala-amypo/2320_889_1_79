@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.entity.Location;
 import com.example.demo.service.LocationService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,12 +17,12 @@ public class LocationController {
     }
 
     @PostMapping
-    public Location create(@RequestBody Location location){
-        return service.createLocation(location);
+    public Location create(@RequestBody Location l){
+        return service.create(l);
     }
 
     @GetMapping
-    public List<Location> all(){
-        return service.getAllLocations();
+    public List<Location> getAll(){
+        return service.getAll();
     }
 }

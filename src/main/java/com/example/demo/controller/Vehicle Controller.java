@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.entity.Vehicle;
 import com.example.demo.service.VehicleService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,12 +17,12 @@ public class VehicleController {
     }
 
     @PostMapping("/{userId}")
-    public Vehicle addVehicle(@PathVariable Long userId, @RequestBody Vehicle vehicle){
-        return service.addVehicle(userId, vehicle);
+    public Vehicle add(@PathVariable Long userId, @RequestBody Vehicle v){
+        return service.addVehicle(userId, v);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<Vehicle> getByUser(@PathVariable Long userId){
+    @GetMapping("/{userId}")
+    public List<Vehicle> list(@PathVariable Long userId){
         return service.getVehiclesByUser(userId);
     }
 }

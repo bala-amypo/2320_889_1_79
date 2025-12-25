@@ -14,13 +14,13 @@ public class ShipmentController {
         this.service = service;
     }
 
-    @PostMapping("/{vehicleId}")
-    public Shipment create(@PathVariable Long vehicleId, @RequestBody Shipment shipment){
-        return service.createShipment(vehicleId, shipment);
+    @PostMapping
+    public Shipment create(@RequestBody Shipment s){
+        return service.create(s);
     }
 
-    @GetMapping("/{shipmentId}")
-    public Shipment get(@PathVariable Long shipmentId){
-        return service.getShipment(shipmentId);
+    @GetMapping("/{id}")
+    public Shipment get(@PathVariable Long id){
+        return service.getShipment(id);
     }
 }
