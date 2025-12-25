@@ -5,7 +5,7 @@ import com.example.demo.service.RouteOptimizationService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/optimize")
+@RequestMapping("/routes")
 public class RouteOptimizationController {
 
     private final RouteOptimizationService service;
@@ -15,12 +15,12 @@ public class RouteOptimizationController {
     }
 
     @PostMapping("/{shipmentId}")
-    public RouteOptimizationResult optimize(@PathVariable Long shipmentId){
+    public boolean optimize(@PathVariable Long shipmentId){
         return service.optimizeRoute(shipmentId);
     }
 
-    @GetMapping("/{resultId}")
-    public RouteOptimizationResult get(@PathVariable Long resultId){
-        return service.getResult(resultId);
+    @GetMapping("/{id}")
+    public RouteOptimizationResult get(@PathVariable Long id){
+        return service.getResult(id);
     }
 }
