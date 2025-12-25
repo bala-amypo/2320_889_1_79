@@ -34,9 +34,10 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     /**
-     * IMPORTANT FOR TEST t06:
-     * Do NOT validate user existence
-     * Do NOT throw exception
+     * IMPORTANT for t06:
+     * - Do NOT validate if user exists
+     * - Do NOT throw exception
+     * - Just return vehicles list
      */
     @Override
     public List<Vehicle> getVehiclesByUser(Long userId) {
@@ -44,7 +45,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     /**
-     * REQUIRED BY MULTIPLE TEST CASES
+     * REQUIRED by multiple test cases
      */
     @Override
     public Vehicle findById(Long id) {
@@ -53,16 +54,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     /**
-     * REQUIRED BY TEST CASES
+     * REQUIRED by TransportRouteOptimizationTest
+     * Must unwrap Optional
      */
     @Override
     public Vehicle findByVehicleNumber(String vehicleNumber) {
-        Vehicle vehicle = vehicleRepository.findByVehicleNumber(vehicleNumber);
-
-        if (vehicle == null) {
-            throw new ResourceNotFoundException("Vehicle not found");
-        }
-
-        return vehicle;
+        return vehicleRepository.findByVehicleNumber(vehicleNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
     }
 }
