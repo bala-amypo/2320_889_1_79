@@ -1,16 +1,14 @@
 package com.example.demo.config;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        scheme = "bearer",
-        bearerFormat = "JWT"
-)
 public class SwaggerConfig {
-
+    @Bean
+    public Docket api(){
+        return new Docket(DocumentationType.OAS_30);
+    }
 }
