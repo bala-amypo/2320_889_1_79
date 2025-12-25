@@ -6,7 +6,9 @@ import com.example.demo.repository.*;
 import com.example.demo.service.ShipmentService;
 
 import java.time.LocalDate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepo;
