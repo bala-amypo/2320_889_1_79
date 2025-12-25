@@ -1,37 +1,39 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repo;
+    private final PasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder){
+        this.repo = repo;
+        this.encoder = encoder;
     }
 
     @Override
-    public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public User register(User user){
+        user.setPassword(encoder.encode(user.getPassword()));
+        if(user.getRole()==null) user.setRole("USER");
+        return repo.save(user);
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElse(null);
+    public User findByEmail(String email){
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
-    public User findById(long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+    public User findById(Long id){
+        return repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }
