@@ -3,11 +3,12 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
-@Builder
+@Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Builder
 public class Vehicle {
 
     @Id
@@ -15,6 +16,9 @@ public class Vehicle {
     private Long id;
 
     private String vehicleNumber;
-    private String type;
-    private double capacity;
+
+    private double capacityKg;
+
+    @ManyToOne
+    private User user;
 }

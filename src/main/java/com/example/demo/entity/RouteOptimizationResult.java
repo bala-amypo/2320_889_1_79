@@ -3,17 +3,21 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
-@Builder
+@Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Builder
 public class RouteOptimizationResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double totalDistance;
-    private double estimatedTime;
+    @OneToOne
+    private Shipment shipment;
+
+    private double optimizedDistanceKm;
+    private double estimatedFuelUsageL;
 }
