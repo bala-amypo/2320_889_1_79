@@ -1,6 +1,8 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -14,7 +16,7 @@ public class JwtUtil {
     private final String SECRET = "secretkey123456";
     private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
-    // ---- REQUIRED BY TESTS ----
+    // ==== REQUIRED BY TESTS ====
     public String generateToken(long userId, String email, String role) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -51,3 +53,12 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+}
