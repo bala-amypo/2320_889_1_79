@@ -1,13 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Location;
-import java.util.List;
+import java.util.*;
 
 public interface LocationService {
-
-    Location createLocation(Location location);
-
+    Location createLocation(Location l);
     List<Location> getAllLocations();
-
-    Location getLocationById(Long id);
+    Location findById(Long id);
 }
