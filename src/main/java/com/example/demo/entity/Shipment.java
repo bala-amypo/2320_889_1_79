@@ -1,14 +1,15 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Shipment {
 
     @Id
@@ -17,9 +18,14 @@ public class Shipment {
 
     private double weightKg;
 
+    private LocalDate scheduledDate;
+
     @ManyToOne
     private Location pickupLocation;
 
     @ManyToOne
     private Location dropLocation;
+
+    @ManyToOne
+    private Vehicle vehicle;
 }
