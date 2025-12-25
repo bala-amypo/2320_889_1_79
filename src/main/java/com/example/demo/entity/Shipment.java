@@ -4,33 +4,34 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "shipments")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Shipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String shipmentCode;
-
-    private double weight;
-
-    private String status;
+    private double weightKg;
 
     @ManyToOne
-    @JoinColumn(name = "source_location_id")
-    private Location source;
+    private Location pickupLocation;
 
     @ManyToOne
-    @JoinColumn(name = "destination_location_id")
-    private Location destination;
+    private Location dropLocation;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
+    public Location getPickupLocation() {
+        return pickupLocation;
+    }
+
+    public Location getDropLocation() {
+        return dropLocation;
+    }
+
+    public double getWeightKg() {
+        return weightKg;
+    }
 }
