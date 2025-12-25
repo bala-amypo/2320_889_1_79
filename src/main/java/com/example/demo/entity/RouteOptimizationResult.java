@@ -18,18 +18,16 @@ public class RouteOptimizationResult {
 
     private LocalDateTime generatedAt;
 
-    public Long getId(){return id;}
-    public void setId(Long id){this.id=id;}
+    public RouteOptimizationResult(){
+        this.generatedAt = LocalDateTime.now();
+    }
 
-    public Shipment getShipment(){return shipment;}
-    public void setShipment(Shipment shipment){this.shipment=shipment;}
-
-    public Double getOptimizedDistanceKm(){return optimizedDistanceKm;}
-    public void setOptimizedDistanceKm(Double optimizedDistanceKm){this.optimizedDistanceKm=optimizedDistanceKm;}
-
-    public Double getEstimatedFuelUsageL(){return estimatedFuelUsageL;}
-    public void setEstimatedFuelUsageL(Double estimatedFuelUsageL){this.estimatedFuelUsageL=estimatedFuelUsageL;}
-
-    public LocalDateTime getGeneratedAt(){return generatedAt;}
-    public void setGeneratedAt(LocalDateTime generatedAt){this.generatedAt=generatedAt;}
+    public Long getId(){ return id;}
+    public Shipment getShipment(){ return shipment;}
+    public void setShipment(Shipment s){ this.shipment=s;}
+    public Double getOptimizedDistanceKm(){ return optimizedDistanceKm;}
+    public void setOptimizedDistanceKm(Double d){ this.optimizedDistanceKm=d;}
+    public Double getEstimatedFuelUsageL(){ return estimatedFuelUsageL;}
+    public void setEstimatedFuelUsageL(Double f){ this.estimatedFuelUsageL=f;}
+    public LocalDateTime getGeneratedAt(){ return generatedAt;}
 }
