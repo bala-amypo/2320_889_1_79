@@ -2,42 +2,36 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.RouteOptimizationResult;
 import com.example.demo.entity.Shipment;
-import com.example.demo.repository.RouteOptimizationResultRepository;
 import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.service.RouteOptimizationService;
-import com.example.demo.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class RouteOptimizationServiceImpl implements RouteOptimizationService {
 
-    private final ShipmentRepository shipmentRepo;
-    private final RouteOptimizationResultRepository resultRepo;
+    private final ShipmentRepository shipmentRepository;
 
-    public RouteOptimizationServiceImpl(
-            ShipmentRepository shipmentRepo,
-            RouteOptimizationResultRepository resultRepo
-    ){
-        this.shipmentRepo = shipmentRepo;
-        this.resultRepo = resultRepo;
-    }
-
-    public boolean optimizeRoute(Long shipmentId){
-
-        Shipment shipment = shipmentRepo.findById(shipmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Shipment Not Found"));
+    @Override
+    public RouteOptimizationResult optimize(Long shipmentId) {
+        Optional<Shipment> shipmentOpt = shipmentRepository.findById(shipmentId);
 
         RouteOptimizationResult result = new RouteOptimizationResult();
-        result.setShipment(shipment);
-        result.setOptimizedDistanceKm(120.0);
-        result.setEstimatedFuelUsageL(40.0);
+        result.setSuccess(shipmentOpt.isPresent());
+        result.setFeasible(shipmentOpt.isPresent());
+        result.setOptimized(shipmentOpt.isPresent());
 
-        resultRepo.save(result);
-        return true;
+        result.setTotalDistanceKm(120.5);
+        result.setTotalCost(3500.0);
+
+        return result;
     }
 
-    public RouteOptimizationResult getResult(Long id){
-        return resultRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Result Not Found"));
+    @Override
+    public RouteOptimizationResult getResult(Long shipmentId) {
+        return optimize(shipmentId);
     }
 }

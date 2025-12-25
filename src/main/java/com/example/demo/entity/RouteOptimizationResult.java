@@ -1,23 +1,20 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RouteOptimizationResult {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Boolean success;
+    private Boolean feasible;
+    private Boolean optimized;
 
-    @OneToOne
-    private Shipment shipment;
-
-    private double optimizedDistanceKm;
-    private double estimatedFuelUsageL;
+    private double totalDistanceKm;
+    private double totalCost;
 }
