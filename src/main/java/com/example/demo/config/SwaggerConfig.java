@@ -20,91 +20,50 @@
 //                 );
 //     }
 // }
-// package com.example.demo.config;
 
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.servers.Server;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
+package com.example.demo.config;
 
-// import java.util.List;
+import java.util.List;
 
-// @Configuration
-// public class SwaggerConfig {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 .servers(
-//                         List.of(
-//                                 new Server().url("https://9283.pro604cr.amypo.ai/")
-//                         )
-//                 );
-//     }
-// }
-// package com.example.demo.config;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.servers.Server;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
+@Configuration
+public class SwaggerConfig {
 
-// import java.util.List;
+    public static final String SECURITY_SCHEME_NAME = "bearerAuth";
 
-// @Configuration
-// public class SwaggerConfig {
+    @Bean
+    public OpenAPI customOpenAPI() {
 
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 .servers(
-//                         List.of(
-//                                 new Server().url("https://9283.pro604cr.amypo.ai/")
-//                         )
-//                 );
-//     }
-// }
-// package com.example.demo.config;
+        return new OpenAPI()
+                // ✅ Server configuration (you already had this)
+                .servers(List.of(
+                        new Server().url("https://9223.pro604cr.amypo.ai/")
+                ))
 
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.servers.Server;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
+                // ✅ THIS enables the Authorize button
+                .addSecurityItem(
+                        new SecurityRequirement().addList(SECURITY_SCHEME_NAME)
+                )
 
-// import java.util.List;
-
-// @Configuration
-// public class SwaggerConfig {
-
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 .servers(
-//                         List.of(
-//                                 new Server().url("https://9283.pro604cr.amypo.ai/")
-//                         )
-//                 );
-//     }
-// }
-// package com.example.demo.config;
-
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.servers.Server;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-
-// import java.util.List;
-
-// @Configuration
-// public class SwaggerConfig {
-
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 .servers(
-//                         List.of(
-//                                 new Server().url("https://9283.pro604cr.amypo.ai/")
-//                         )
-//                 );
-//     }
-// }
+                // ✅ JWT Bearer definition
+                .components(
+                        new Components()
+                                .addSecuritySchemes(
+                                        SECURITY_SCHEME_NAME,
+                                        new SecurityScheme()
+                                                .name("Authorization")
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+                );
+    }
+}
